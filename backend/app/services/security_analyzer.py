@@ -14,27 +14,27 @@ class SecurityAnalyzer:
 
     OWASP_MAPPINGS = {
         "no_auth": {
-            "category": "OWASP API2:2023 - Broken Authentication",
+            "category": "API2:2023 - Broken Authentication",
             "cvss_score": 9.1,
             "severity": SeverityLevel.CRITICAL,
         },
         "http_only": {
-            "category": "OWASP API8:2023 - Security Misconfiguration",
+            "category": "API8:2023 - Security Misconfiguration",
             "cvss_score": 7.5,
             "severity": SeverityLevel.HIGH,
         },
         "no_rate_limit": {
-            "category": "OWASP API4:2023 - Unrestricted Resource Consumption",
+            "category": "API4:2023 - Unrestricted Resource Consumption",
             "cvss_score": 6.5,
             "severity": SeverityLevel.MEDIUM,
         },
         "pii_exposure": {
-            "category": "OWASP API3:2023 - Excessive Data Exposure",
+            "category": "API3:2023 - Broken Object Property Level Authorization",
             "cvss_score": 8.0,
             "severity": SeverityLevel.HIGH,
         },
         "zombie_no_docs": {
-            "category": "OWASP API5:2023 - Broken Object Level Authorization",
+            "category": "API9:2023 - Improper Inventory Management",
             "cvss_score": 6.8,
             "severity": SeverityLevel.MEDIUM,
         },
@@ -49,7 +49,7 @@ class SecurityAnalyzer:
             {
                 "findings": [
                     {
-                        "category": "OWASP API2:2023",
+                        "category": "API2:2023 - Broken Authentication",
                         "cvss_score": 9.1,
                         "severity": "CRITICAL",
                         "description": "..."
