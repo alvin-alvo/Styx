@@ -61,6 +61,13 @@ class SecurityAnalyzer:
         """
         findings = []
 
+        if security is None:
+            return {
+                "findings": [],
+                "security_risk_score": 0.0,
+                "highest_severity": "LOW",
+            }
+
         # Check for missing authentication
         if not security.has_authentication:
             findings.append({

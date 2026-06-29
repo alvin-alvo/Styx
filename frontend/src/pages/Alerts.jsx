@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { getAlerts, acknowledgeAlert } from '../services/api'
 import AlertsFeed from '../components/AlertsFeed'
+import { Loader2, AlertCircle } from 'lucide-react'
 
 export default function Alerts() {
   const [loading, setLoading] = useState(true)
@@ -63,20 +64,21 @@ export default function Alerts() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-ice-blue">
-          <div className="animate-spin text-3xl mb-4">⏳</div>
-          <p>Loading alerts...</p>
-        </div>
+      <div className="flex flex-col items-center justify-center h-[60vh]">
+        <Loader2 className="w-8 h-8 text-blue-600 animate-spin mb-4" />
+        <div className="text-zinc-500 dark:text-zinc-400 font-medium tracking-tight">Syncing alerts...</div>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="bg-red-900/30 border border-red-700 rounded-lg p-4 text-red-200">
-        <p className="font-semibold">Error</p>
-        <p className="text-sm">{error}</p>
+      <div className="flex items-start gap-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/50 rounded-lg p-4 text-red-800 dark:text-red-300">
+        <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+        <div>
+          <p className="font-semibold text-sm">Connection Error</p>
+          <p className="text-sm mt-1 opacity-90">{error}</p>
+        </div>
       </div>
     )
   }
@@ -84,11 +86,13 @@ export default function Alerts() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-ice-blue mb-2">Alerts</h1>
-        <p className="text-ice-blue/70">API lifecycle and security events</p>
+        <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 tracking-tight">Alerts</h1>
+        <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">API lifecycle anomalies and security events</p>
       </div>
 
-      <AlertsFeed alerts={alerts} onAcknowledge={handleAcknowledge} />
+      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm rounded-xl overflow-hidden p-6">
+        <AlertsFeed alerts={alerts} onAcknowledge={handleAcknowledge} />
+      </div>
     </div>
   )
 }

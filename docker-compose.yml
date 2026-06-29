@@ -2,40 +2,49 @@ version: '3.8'
 
 services:
   db:
-    image: postgres:15-alpine
+    image: postgres:15
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: styx
     ports:
       - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d styx"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
 
-  mock-services:
-    image: python:3.11-slim
+  backend:
+    build: 
+      context: ./backend
+    environment:
+      - DATABASE_URL=postgresql+psycopg2://postgres:postgres@db:5432/styx
+      - NGINX_LOG_PATH=/app/logs/access.log
+      - OPENAPI_SPEC_PATH=/app/openapi.json
+    ports:
+      - "8000:8000"
     volumes:
-      - ./backend:/app
-    working_dir: /app
-    command: >
-      bash -c "pip install fastapi uvicorn[standard] && python scripts/mock_services.py"
-    ports:
-      - "8001:8001"
+      - shared_logs:/app/logs
+      - ./openapi.json:/app/openapi.json:ro
+    depends_on:
+      - db
 
-  nginx:
-    image: nginx:alpine
+  frontend:
+    build:
+      context: ./frontend
     ports:
-      - "8080:80"
+      - "5173:5173"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+
+  gateway:
+    image: nginx:latest
+    ports:
+      - "80:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/logs:/var/log/nginx
+      - shared_logs:/var/log/nginx
     depends_on:
-      - mock-services
+      - backend
+      - frontend
 
 volumes:
-  postgres_data:
+  shared_logs:

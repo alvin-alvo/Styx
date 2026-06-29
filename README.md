@@ -20,6 +20,7 @@ Styx is a hackathon prototype that enables organizations to identify zombie APIs
 - Scikit-learn — Isolation Forest ML model (8-feature zombie scorer)
 - NetworkX — Graph-based dependency analysis
 - React 18.2.0 with Vite 5.0.0 (frontend)
+- Lucide React — Professional iconography
 - D3.js 7.8.5 — Interactive dependency graph visualization
 - Recharts 2.10.3 — 30-day trend charts and analytics dashboards
 - Tailwind CSS 3.3.5 — Responsive UI styling
@@ -30,9 +31,7 @@ Styx is a hackathon prototype that enables organizations to identify zombie APIs
 ### Prerequisites
 
 ```bash
-Node.js 18+
-Python 3.13+
-PostgreSQL 15+ (or Docker)
+Docker and Docker Compose
 ```
 
 ### Installation & Startup
@@ -42,32 +41,17 @@ PostgreSQL 15+ (or Docker)
 git clone https://github.com/Rizzy1857/Styx
 cd Styx
 
-# 2. Start the Gateway and Database
-docker-compose up -d
+# 2. Build and start all services (Backend, Frontend, Database, Gateway)
+docker-compose up -d --build
 
-# 3. Setup Python Backend
-cd backend
-python -m venv .venv
-source .venv/bin/activate  # macOS/Linux; Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-alembic upgrade head
+# 3. Verify services are running
+docker ps
+```
 
-# 4. Start the Application Pipeline (requires 3 terminals in backend/)
-# Terminal A (FastAPI Backend)
-uvicorn app.main:app --reload --port 8000
-# Terminal B (Nginx Log Ingestor)
-python scripts/log_ingestor.py
-# Terminal C (Traffic Generator)
-python scripts/traffic_loop.py
+### Accessing the Application
 
-# 5. Start frontend (Terminal D)
-cd ../frontend
-npm install
-npm run dev
-
-# 6. Access application
-# Frontend:  http://localhost:5173
-# API Docs:  http://localhost:8000/docs
+- **Frontend Dashboard:** [http://localhost](http://localhost) (via Nginx Gateway) or [http://localhost:5173](http://localhost:5173)
+- **API Documentation:** [http://localhost:8000/docs](http://localhost:8000/docs)
 ```
 
 ## Project Structure
@@ -180,6 +164,13 @@ Note: Results rely on simulated mock traffic. A true production deployment would
 - 6 new analytics endpoints
 - Analytics dashboard (30-day trends, heatmaps, top-at-risk APIs)
 - ML model training & metrics monitoring (synthetic)
+
+**Phase 2: Enterprise UI Modernization** ✅ Complete (June 29, 2026)
+
+- Overhauled UI to boardroom-ready Enterprise SaaS aesthetic
+- Fully integrated Light/Dark mode
+- Replaced all legacy icons with `lucide-react`
+- Fixed Docker build pipeline for production readiness
 
 **Phase 2.2 (Infrastructure)** ⏳ Planned
 
@@ -315,6 +306,6 @@ MIT License — See LICENSE file.
 
 ---
 
-**Status:** Phase 2.1 Complete (v0.8.0) ✅  
-**Last Updated:** May 17, 2026  
+**Status:** Phase 2 Complete (v0.9.0) ✅  
+**Last Updated:** June 29, 2026  
 **Repository:** [github.com/Rizzy1857/Styx](https://github.com/Rizzy1857/Styx)

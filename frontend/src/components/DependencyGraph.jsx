@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 import * as d3 from 'd3'
 import { createSimulation, getNodeColor, getLinkWidth, setupZoom } from '../utils/d3-helpers'
+import { AlertTriangle, Activity, Network } from 'lucide-react'
 
 export default function DependencyGraph({ data }) {
   const svgRef = useRef()
@@ -19,7 +20,7 @@ export default function DependencyGraph({ data }) {
       .select(svgRef.current)
       .attr('width', width)
       .attr('height', height)
-      .style('background', '#15193C')
+      .style('background', 'transparent')
 
     // Create forces
     const simulation = createSimulation(data.nodes, data.edges, width, height)
@@ -33,9 +34,8 @@ export default function DependencyGraph({ data }) {
       .data(data.edges)
       .enter()
       .append('line')
-      .attr('class', 'link')
-      .attr('stroke', '#CADCFC')
-      .attr('stroke-opacity', 0.3)
+      .attr('class', 'link stroke-zinc-300 dark:stroke-zinc-700')
+      .attr('stroke-opacity', 0.6)
       .attr('stroke-width', (d) => getLinkWidth(d.weight))
 
     // Draw nodes
@@ -44,10 +44,9 @@ export default function DependencyGraph({ data }) {
       .data(data.nodes)
       .enter()
       .append('circle')
-      .attr('class', 'node')
+      .attr('class', 'node stroke-white dark:stroke-zinc-900')
       .attr('r', (d) => (d.type === 'service' ? 6 : 8))
       .attr('fill', (d) => getNodeColor(d))
-      .attr('stroke', '#1E2761')
       .attr('stroke-width', 2)
       .call(d3.drag().on('start', dragstarted).on('drag', dragged).on('end', dragended))
 
@@ -57,9 +56,8 @@ export default function DependencyGraph({ data }) {
       .data(data.nodes)
       .enter()
       .append('text')
-      .attr('class', 'label')
+      .attr('class', 'label fill-zinc-600 dark:fill-zinc-400 font-medium')
       .attr('font-size', '10px')
-      .attr('fill', '#CADCFC')
       .attr('text-anchor', 'middle')
       .attr('dy', '.3em')
       .text((d) => d.id.substring(0, 8))
@@ -100,35 +98,52 @@ export default function DependencyGraph({ data }) {
   }, [data])
 
   if (!data) {
-    return <div className="text-ice-blue/50 text-center py-8">No dependency data</div>
+    return null
   }
 
   return (
-    <div className="border border-light-navy/30 rounded bg-dark-navy overflow-hidden">
+    <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg bg-zinc-50 dark:bg-zinc-950 overflow-hidden shadow-sm">
       <svg ref={svgRef} style={{ width: '100%', height: '500px' }} />
-      <div className="p-4 bg-navy/50 border-t border-light-navy/30">
-        <div className="grid grid-cols-3 gap-4 text-sm">
-          <div>
-            <p className="text-ice-blue/70">Dependent Services</p>
-            <p className="text-lg font-bold text-ice-blue">{data.impact.dependent_services}</p>
+      <div className="p-5 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg">
+              <Network size={20} />
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5">Dependent Services</p>
+              <p className="text-xl font-bold text-zinc-900 dark:text-zinc-50">{data.impact.dependent_services}</p>
+            </div>
           </div>
-          <div>
-            <p className="text-ice-blue/70">Impact Score</p>
-            <p className="text-lg font-bold text-ice-blue">{(data.impact.impact_score * 100).toFixed(0)}%</p>
+          
+          <div className="flex items-center gap-3 border-t sm:border-t-0 sm:border-l border-zinc-200 dark:border-zinc-800 pt-4 sm:pt-0 sm:pl-6">
+            <div className="p-2.5 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 rounded-lg">
+              <Activity size={20} />
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5">Impact Score</p>
+              <p className="text-xl font-bold text-zinc-900 dark:text-zinc-50">{(data.impact.impact_score * 100).toFixed(0)}%</p>
+            </div>
           </div>
-          <div>
-            <p className="text-ice-blue/70">Severity</p>
-            <p
-              className={`text-lg font-bold ${
-                data.impact.impact_severity === 'HIGH'
-                  ? 'text-red-400'
-                  : data.impact.impact_severity === 'MEDIUM'
-                    ? 'text-yellow-400'
-                    : 'text-green-400'
-              }`}
-            >
-              {data.impact.impact_severity}
-            </p>
+
+          <div className="flex items-center gap-3 border-t sm:border-t-0 sm:border-l border-zinc-200 dark:border-zinc-800 pt-4 sm:pt-0 sm:pl-6">
+            <div className="p-2.5 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg">
+              <AlertTriangle size={20} />
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5">Severity</p>
+              <p
+                className={`text-xl font-bold ${
+                  data.impact.impact_severity === 'HIGH'
+                    ? 'text-red-600 dark:text-red-500'
+                    : data.impact.impact_severity === 'MEDIUM'
+                      ? 'text-amber-600 dark:text-amber-500'
+                      : 'text-emerald-600 dark:text-emerald-500'
+                }`}
+              >
+                {data.impact.impact_severity}
+              </p>
+            </div>
           </div>
         </div>
       </div>
