@@ -179,7 +179,7 @@ Note: Results rely on simulated mock traffic. A true production deployment would
 - 3-method anomaly detection (traffic, dependency, security)
 - 6 new analytics endpoints
 - Analytics dashboard (30-day trends, heatmaps, top-at-risk APIs)
-- ML model training & metrics monitoring
+- ML model training & metrics monitoring (synthetic)
 
 **Phase 2.2 (Infrastructure)** ⏳ Planned
 
@@ -280,7 +280,7 @@ python scripts/generate_attack.py # Simulate malicious requests
 
 Styx is deployment-ready on:
 
-- Docker/Kubernetes: See Docker Compose configurations in project root
+- Docker: See Docker Compose configurations in project root
 - Cloud Platforms: AWS (RDS + ECS), GCP (Cloud SQL + Run), Azure (SQL + App Service)
 - Local: PostgreSQL + Python/Node.js environments (instructions above)
 
