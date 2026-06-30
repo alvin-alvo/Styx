@@ -17,9 +17,8 @@ export default function App() {
       <div className="flex h-screen bg-dark-navy">
         {/* Sidebar */}
         <aside
-          className={`${
-            sidebarOpen ? 'w-64' : 'w-20'
-          } bg-navy border-r border-light-navy transition-all duration-300 overflow-hidden`}
+          className={`${sidebarOpen ? 'w-64' : 'w-20'
+            } bg-navy border-r border-light-navy transition-all duration-300 overflow-hidden`}
         >
           <div className="p-6 border-b border-light-navy">
             <h1 className={`text-2xl font-bold text-ice-blue ${!sidebarOpen && 'text-center'}`}>

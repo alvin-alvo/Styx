@@ -21,7 +21,43 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="Styx API", debug=settings.DEBUG, lifespan=lifespan)
+tags_metadata = [
+    {
+        "name": "health",
+        "description": "System health and database connectivity checks.",
+    },
+    {
+        "name": "apis",
+        "description": "API inventory, lifecycle states, and dependency maps.",
+    },
+    {
+        "name": "scoring",
+        "description": "Deterministic algorithms calculating Zombie and Shadow API risks.",
+    },
+    {
+        "name": "simulator",
+        "description": "Predictive blast radius simulation for API decommissioning.",
+    },
+    {
+        "name": "alerts",
+        "description": "Real-time security alerts based on Median Absolute Deviation (MAD).",
+    },
+    {
+        "name": "assistant",
+        "description": "Ollama LLM integration for executive summaries.",
+    }
+]
+
+app = FastAPI(
+    title="Styx Enterprise API",
+    description="Backend services for the Styx API Security & Lifecycle Management Platform. Defensible, deterministic, and built for zero-trust.",
+    version="1.0.0",
+    openapi_tags=tags_metadata,
+    docs_url="/docs",  # Default swagger endpoint
+    redoc_url="/redoc",
+    debug=settings.DEBUG,
+    lifespan=lifespan
+)
 
 app.add_middleware(
     CORSMiddleware,
