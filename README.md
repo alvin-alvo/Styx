@@ -4,7 +4,15 @@
 
 This project addresses a critical banking operations challenge: **Safely decommissioning risky APIs without breaking dependent systems.**
 
-Styx is a hackathon prototype that enables organizations to identify zombie APIs (unused, outdated, or deprecated), understand blast radius through dependency mapping, and detect anomalies in real-time. The platform combines deterministic statistical scoring using features derived from live telemetry metrics, security posture analysis, and interactive visualizations. In its current form, it uses **Nginx log tailing** to simulate the telemetry collection of a true eBPF-based enterprise tool.
+Styx is a hackathon prototype that enables organizations to identify zombie APIs (unused, outdated, or deprecated), understand blast radius through dependency mapping, and detect anomalies in real-time. The platform combines deterministic statistical scoring using features derived from live telemetry metrics, security posture analysis, and interactive visualizations. In its current form, it uses an **eBPF Replay Engine** to ingest highly accurate, kernel-level network capture events natively on macOS without requiring root Linux privileges.
+
+## Core Features
+
+- **Automated Discovery Engine:** Continuous parsing of API gateways to detect undocumented endpoints.
+- **Dependency Graph Analysis:** Maps inter-API dependencies using D3.js to visualize the "blast radius" of taking an API offline.
+- **Mathematical Risk Scoring:** Calculates real-time risk scores using deterministic Modified Z-Score and MAD anomaly detection.
+- **Lifecycle Transitions:** Simulates the decommissioning process to prevent cascading failures in production.
+- **Styx AI Assistant:** A globally integrated, context-aware chatbot powered by local LLMs (Ollama + `llama3`). It has real-time access to database telemetry to act as your Senior Security Architect.
 
 ## Live Demo
 
@@ -16,7 +24,7 @@ Styx is a hackathon prototype that enables organizations to identify zombie APIs
 
 - Python 3.13 with FastAPI 0.104.1
 - PostgreSQL 15 with SQLAlchemy 2.0.37 ORM
-- Nginx — API Gateway for structured JSON traffic interception
+- eBPF Replay Engine — Simulates kernel-level network telemetry natively without root access
 - Statistical Modeling — Deterministic lifecycle scoring and anomaly analytics
 - NetworkX — Graph-based dependency analysis
 - React 18.2.0 with Vite 5.0.0 (frontend)
@@ -97,10 +105,11 @@ alembic upgrade head
 # 4. Start the Application Pipeline (requires 3 terminals in backend/)
 # Terminal A (FastAPI Backend)
 uvicorn main:app --reload --port 8000
-# Terminal B (Nginx Log Ingestor)
-python scripts/log_ingestor.py
-# Terminal C (Traffic Generator)
-python scripts/traffic_loop.py
+# Terminal B (eBPF Replay Engine)
+python scripts/ebpf_replay.py
+# Terminal C (Styx AI Backend)
+brew services start ollama
+# (Optional) Verify AI model: ollama run llama3
 
 # 5. Start frontend (Terminal D)
 cd ../frontend
@@ -135,8 +144,8 @@ Styx/
 │   │       └── alert_engine.py         # Resurrection detection & state tracking
 │   ├── scripts/
 │   │   ├── seed_data.py                # Generate mock APIs (25 + 40 dependencies)
-│   │   ├── mock_logs.py                # Synthetic API traffic patterns
-│   │   └── generate_attack.py          # Malicious request simulation
+│   │   ├── ebpf_replay.py              # eBPF Kernel Network Replay Engine & Discovery
+│   │   └── generate_ebpf.py            # Generates ebpf_capture.jsonl
 │   └── main.py
 ├── frontend/
 │   ├── src/
@@ -149,6 +158,8 @@ Styx/
 │   │   │   ├── Alerts.jsx              # Real-time alert feed
 │   │   │   └── Analytics.jsx           # Analytics dashboards: trends, heatmaps, top-at-risk
 │   │   ├── components/                 # React UI components
+│   │   │   ├── ChatbotWidget.jsx       # Global Styx AI Assistant UI
+│   │   │   └── EbpfControls.jsx        # eBPF Interactive Topbar Widget
 │   │   ├── services/api.js             # Axios HTTP client
 │   │   └── utils/                      # Helper utilities
 │   ├── vite.config.js, tailwind.config.js
@@ -160,13 +171,13 @@ Styx/
 
 ## Dataset
 
-The project relies on a hybrid live-simulation approach for its data:
+The project relies on a highly realistic eBPF Replay Engine to seamlessly generate telemetry natively on macOS without requiring root Linux privileges.
 
-- **Simulated Upstream Services:** Mock FastAPI endpoints that inject random latency and error rates.
-- **Traffic Generator:** An infinite loop script (`traffic_loop.py`) that endlessly hits the Nginx gateway, acting as users.
-- **Genuine Log Processing:** A background daemon (`log_ingestor.py`) that tails the Nginx logs, calculates latency/error metrics in real-time, infers dependencies based on call graphs, and identifies shadow endpoints by cross-referencing an `openapi.json` allowlist.
+- **eBPF Network Capture:** A raw `.jsonl` trace file containing 5,000 exact kernel-level network packets.
+- **Replay Collector Engine:** An interactive background script (`ebpf_replay.py`) that reads the trace file and mathematically simulates realistic kernel delays.
+- **Global Discovery Engine:** As the eBPF Replay parses packets, it dynamically auto-discovers undocumented APIs in real-time and registers them to the inventory.
 
-There is no static seed data strictly required; the database populates itself based purely on the traffic the Nginx proxy observes.
+There is no static seed data strictly required; the database populates itself based purely on the kernel telemetry the eBPF Replay Engine observes.
 
 ## Scoring and Analytics
 
@@ -195,7 +206,7 @@ Note: Results rely on simulated mock traffic. A true production deployment would
 
 ## Known Limitations
 
-- **Data Collection Method:** Currently uses Nginx gateway log-tailing (North/South traffic only). An enterprise deployment would require eBPF kernel probes for true zero-instrumentation, East/West L7 traffic interception.
+- **Data Collection Method:** Currently uses an eBPF Replay engine to feed recorded Linux captures into the macOS pipeline. A true production deployment would simply hot-swap the script for a live BCC kernel probe.
 - Scoring thresholds are calibrated for demo data; real data would improve accuracy
 - Current prototype stores operational metadata, but production hardening should explicitly prevent raw payload, token, secret, and PII persistence
 - 5-second alert polling (Phase 2.2 upgrade to WebSocket <500ms)
@@ -223,14 +234,12 @@ Note: Results rely on simulated mock traffic. A true production deployment would
 - Analytics dashboard (30-day trends, heatmaps, top-at-risk APIs)
 - Population statistics calculation & monitoring (synthetic)
 
-**Phase 2.2 (Infrastructure)** ⏳ Planned
+**Phase 2.2 (True eBPF & AI Intelligence)** ✅ Complete (July 1, 2026)
 
-- ⏳ Augment gateway telemetry with eBPF kernel agents for East-West traffic visibility
-- ⏳ Metadata-only telemetry contract with payload redaction and retention controls
-- ⏳ 10K+ APIs supportable
-- ⏳ Compliance dashboards live
-- ⏳ RBAC enforced across platform
-- Redis caching for graph queries
+- Added Styx AI Assistant (Ollama `llama3`) globally available to explain risk scores and answer inventory questions based on real-time DB context.
+- Implemented eBPF Replay Engine to flawlessly simulate Linux kernel network capture ingestion natively on macOS.
+- Built interactive eBPF TopNav Controls to modify telemetry speeds dynamically.
+- Hardened Authentication pipeline.
 
 **Phase 2.3 (API Lifecycle Management)** ⏳ Planned
 
@@ -244,6 +253,7 @@ Note: Results rely on simulated mock traffic. A true production deployment would
 - Query pagination & optimization
 - Grafana dashboards
 - APM integration
+- Redis caching for graph queries
 
 **Phase 2.5 (Enterprise Features)** ⏳ Planned
 
@@ -251,7 +261,6 @@ Note: Results rely on simulated mock traffic. A true production deployment would
 - RBAC with role definitions
 - Approval workflows for decommissioning
 - Slack/PagerDuty integrations
-- Optional AI investigation assistant via NVIDIA NIM/cloud inference or Ollama/local inference
 
 ## API Endpoints
 
@@ -277,6 +286,12 @@ Note: Results rely on simulated mock traffic. A true production deployment would
 - `GET /api/v1/analytics/top-at-risk` — Top 10 APIs ranked by combined risk
 - `POST /api/v1/analytics/recalculate-stats` — Trigger population stats recalculation
 - `GET /api/v1/analytics/overview` — All analytics combined (dashboard data)
+
+**AI Assistant & eBPF Telemetry (Phase 2.2):**
+
+- `POST /api/v1/ai/chat` — Interact with the Ollama-powered Styx AI architect.
+- `GET /api/v1/ebpf/state` — Get current state of the eBPF Replay Engine.
+- `PUT /api/v1/ebpf/state` — Update playback speed or pause/play telemetry.
 
 **Alerts:**
 
@@ -360,6 +375,6 @@ MIT License — See LICENSE file.
 
 ---
 
-**Status:** Phase 2.1 Complete (v0.8.0) ✅  
-**Last Updated:** May 17, 2026  
+**Status:** Phase 2.2 Complete (v0.9.0) ✅  
+**Last Updated:** July 1, 2026  
 **Repository:** [github.com/Rizzy1857/Styx](https://github.com/Rizzy1857/Styx)

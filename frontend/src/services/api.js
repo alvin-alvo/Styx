@@ -29,4 +29,13 @@ export const simulateBlastRadius = (apiIds) =>
 export const generateAISummary = (apiData, contextType) =>
   apiClient.post('/api/v1/ai/summary', { api_data: apiData, context_type: contextType })
 
+export const sendChatMessage = (messages) =>
+  apiClient.post('/api/v1/ai/chat', { messages })
+
+export const getEbpfState = () =>
+  apiClient.get('/api/v1/ebpf/state')
+
+export const updateEbpfState = (status, speed) =>
+  apiClient.put('/api/v1/ebpf/state', { status, speed })
+
 export default apiClient

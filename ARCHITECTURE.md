@@ -4,18 +4,19 @@ Styx is built as a multi-tier application designed to intercept, analyze, and vi
 
 ## High-Level Components
 
-1. **API Gateway / Telemetry Interception (Nginx)**
-   - **Role:** Acts as the entry point for all API traffic.
-   - **Details:** In the current prototype, Nginx is used as a reverse proxy that fronts mock services. It logs all traffic in a structured JSON format. This simulates a real-world scenario where an eBPF-based agent or an enterprise API gateway captures telemetry without needing code instrumentation (zero-instrumentation approach).
+1. **API Gateway / Telemetry Interception (eBPF)**
+   - **Role:** Acts as the entry point for all API telemetry.
+   - **Details:** Styx natively utilizes an **eBPF Replay Engine** to process raw Linux kernel network captures. This bypasses the need for gateway integration (zero-instrumentation) and perfectly intercepts East-West and North-South L7 traffic dynamically.
 
-2. **Log Ingestion & Processing Pipeline (Python)**
-   - **Role:** Parses logs and extracts metrics in real-time.
-   - **Details:** A daemon (`scripts/log_ingestor.py`) tails the Nginx access logs. It computes live metrics such as latency, error rates, and identifies shadow APIs by cross-referencing observed traffic with an `openapi.json` allowlist. It continuously upserts this data into the primary database.
+2. **Replay & Discovery Pipeline (Python)**
+   - **Role:** Parses kernel network events and extracts metrics in real-time.
+   - **Details:** The engine (`scripts/ebpf_replay.py`) streams an `ebpf_capture.jsonl` trace file. It instantly auto-discovers undocumented APIs (Shadow APIs) and dynamically generates security postures and latency aggregates natively into the primary database.
 
 3. **Backend Application (FastAPI)**
    - **Role:** Core business logic, machine learning, and data serving.
    - **Details:** Built with Python 3.13 and FastAPI, it serves REST APIs and Server-Sent Events (SSE). It handles:
      - **Lifecycle Scoring:** Uses an explainable deterministic formula over traffic decay, documentation gap, authentication weakness, and dependency orphan status to classify APIs as ACTIVE, DEPRECATED, or ZOMBIE.
+     - **Styx AI Assistant:** Integrates with Ollama (`llama3`) locally. With `temperature: 0.1`, it has real-time database context injection to answer deterministic inventory queries without hallucination.
      - **Dependency Mapping:** Constructs in-memory graphs using NetworkX to calculate the blast radius of deprecating an API.
      - **Anomaly Detection:** Monitors for traffic spikes, sudden dependency changes, or new OWASP violations.
 
@@ -27,11 +28,9 @@ Styx is built as a multi-tier application designed to intercept, analyze, and vi
    - **Role:** User interface and visualization.
    - **Details:** A React 18 application built with Vite and styled using Tailwind CSS. Key visualizations include:
      - **D3.js:** For rendering interactive, force-directed dependency graphs.
+     - **Global Chatbot UI:** Floating Styx AI widget on all screens.
+     - **eBPF Interactive Controls:** Global topbar controls to play/pause/accelerate the telemetry ingestion stream.
      - **Recharts:** For displaying 30-day API usage trends, security risk matrices, and analytics dashboards.
-
-6. **Traffic Simulation Environment**
-   - **Role:** Generates synthetic data for the hackathon prototype.
-   - **Details:** A `traffic_loop.py` script endlessly hits the Nginx gateway to simulate normal users, while `generate_attack.py` simulates malicious/rogue traffic to trigger security alerts.
 
 ## Metadata-Only Data Contract
 
@@ -46,15 +45,6 @@ Styx should be treated as a metadata intelligence layer, not a payload storage s
 
 Production deployments should not store raw request bodies, response bodies, authorization tokens, cookies, full customer records, account numbers, or unredacted PII. If payload inspection is ever added, it should run as a redaction/classification step before persistence.
 
-## AI and Vulnerability Intelligence Roadmap
-
-There are two separate future tracks that are easy to confuse:
-
-- **NVD integration:** Adds CVE/vulnerability intelligence to security findings. This would enrich APIs with CVE ID, CVSS score, severity, publication date, and a short description.
-- **NVIDIA/Ollama integration:** Adds an optional AI investigation assistant. NVIDIA NIM/API Catalog is a credible enterprise/cloud inference path, while Ollama is a credible local/private inference path.
-
-AI should summarize evidence, explain risk, draft remediation steps, and help owners investigate APIs. AI should not replace deterministic lifecycle scoring or invent dependency evidence.
-
 ## Future Enterprise Architecture (Planned)
 
-While the current setup relies on log tailing, the planned enterprise architecture (Phase 2.2+) will replace Nginx log parsing with **eBPF kernel agents** to natively intercept East-West and North-South L7 traffic with zero overhead, alongside introducing Redis caching for graph queries and multi-tenancy support.
+While the current setup seamlessly simulates kernel probes via the eBPF Replay Engine, the planned enterprise architecture (Phase 2.3+) will allow users to deploy a live BCC kernel agent on real production Linux clusters, alongside introducing Redis caching for graph queries and multi-tenancy support.

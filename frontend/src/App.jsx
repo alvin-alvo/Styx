@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import React from 'react'
+import React, { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { useAppContext } from './context/AppContext'
 import Layout from './components/Layout'
@@ -13,6 +13,8 @@ import Simulator from './pages/Simulator'
 import Alerts from './pages/Alerts'
 import Analytics from './pages/Analytics'
 import Dashboard from './pages/Dashboard'
+import ChatbotWidget from './components/ChatbotWidget'
+import EbpfControls from './components/EbpfControls'
 import './index.css'
 
 function ProtectedRoute({ children }) {
@@ -53,6 +55,7 @@ export default function App() {
         <Route path="/analytics" element={<Navigate to="/dashboard/analytics" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      <ChatbotWidget />
     </Router>
   )
 }

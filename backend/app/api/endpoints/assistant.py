@@ -1,10 +1,12 @@
 """AI Assistant endpoints."""
 
 import requests
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import Dict, Any
-
+from sqlalchemy.orm import Session
+from app.core.database import get_db
+from app.models.api import API
 import os
 
 router = APIRouter(prefix="/api/v1", tags=["assistant"])
@@ -17,8 +19,84 @@ class AISummaryResponse(BaseModel):
     summary: str
     model_used: str
 
+class ChatMessage(BaseModel):
+    role: str
+    content: str
+
+class ChatRequest(BaseModel):
+    messages: list[ChatMessage]
+
+class ChatResponse(BaseModel):
+    message: ChatMessage
+    model_used: str
+
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434/api/generate")
+OLLAMA_CHAT_URL = os.environ.get("OLLAMA_CHAT_URL", "http://localhost:11434/api/chat")
 DEFAULT_MODEL = os.environ.get("OLLAMA_MODEL", "llama3")
+
+@router.post("/ai/chat", response_model=ChatResponse)
+def chat_with_ai(request: ChatRequest, db: Session = Depends(get_db)):
+    """
+    Interact with the Styx AI Assistant via Ollama's chat API with strict scoping and real-time context.
+    """
+    
+    # Dynamically fetch real-time API inventory stats
+    apis = db.query(API).all()
+    total_apis = len(apis)
+    status_counts = {}
+    dead_apis = []
+    
+    for api in apis:
+        status = api.current_status
+        status_counts[status] = status_counts.get(status, 0) + 1
+        if status in ['ZOMBIE', 'DEPRECATED']:
+            dead_apis.append(api.endpoint)
+            
+    # Format a context block
+    context_block = f"""
+[REAL-TIME SYSTEM STATE]
+Total APIs in Inventory: {total_apis}
+Status Breakdown: {status_counts}
+Dead/Zombie/Deprecated APIs: {', '.join(dead_apis[:15])} {'(Truncated)' if len(dead_apis) > 15 else ''}
+"""
+    
+    # Broadened but strictly professional System Prompt
+    system_prompt = ChatMessage(
+        role="system",
+        content=f"""You are Styx-AI, an Enterprise API Security Architect. 
+YOUR CAPABILITIES: You have real-time access to the Styx API inventory. You can advise users on shortcuts, mathematical thresholds, and exact API counts.
+CURRENT KNOWLEDGE:
+{context_block}
+YOUR SCOPE IS STRICTLY LIMITED to API Security, Zombie/Shadow APIs, Traffic Analytics, Mathematical anomaly detection (MAD/Z-scores), and the Styx Platform workflow.
+CRITICAL RULE: If the user asks about ANY topic outside of this scope (e.g., writing general code, history, math unrelated to Styx, cooking, or general AI assistance), you MUST refuse to answer and politely redirect them to API security.
+Do not break character. Be professional, direct, analytical, and concise."""
+    )
+    
+    # Ensure system prompt is first
+    messages = [system_prompt.model_dump()] + [msg.model_dump() for msg in request.messages]
+
+    try:
+        response = requests.post(
+            OLLAMA_CHAT_URL,
+            json={
+                "model": DEFAULT_MODEL,
+                "messages": messages,
+                "stream": False,
+                "options": {
+                    "temperature": 0.1  # Set low for deterministic, factual, analytical responses
+                }
+            },
+            timeout=60
+        )
+        response.raise_for_status()
+        
+        result = response.json()
+        return ChatResponse(
+            message=ChatMessage(**result.get("message", {"role": "assistant", "content": "No response."})),
+            model_used=DEFAULT_MODEL
+        )
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=503, detail=f"Failed to connect to AI instance: {str(e)}")
 
 @router.post("/ai/summary", response_model=AISummaryResponse)
 def generate_ai_summary(request: AISummaryRequest):

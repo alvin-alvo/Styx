@@ -41,7 +41,10 @@ export function AppProvider({ children }) {
   };
 
   const login = (username, password) => {
-    if (username === 'admin' && password === 'admin') {
+    const cleanUser = (username || '').trim().toLowerCase();
+    const cleanPass = (password || '').trim().toLowerCase();
+    
+    if (cleanUser === 'admin' && cleanPass === 'admin') {
       setIsAuthenticated(true);
       setUser({ username: 'admin', role: 'administrator' });
       return true;

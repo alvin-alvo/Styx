@@ -16,6 +16,20 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Documented the metadata-only ingestion rule: store operational metadata and aggregates, not raw payloads, tokens, secrets, account numbers, or unredacted PII.
 - Added `average_response_time_ms` and `error_rate_percent` to the API response schema for richer operational metadata display.
 
+## [0.9.0] - 2026-07-01
+
+### Added (Phase 2.2: True eBPF & AI Intelligence)
+
+- **eBPF Replay Engine**: Added `backend/scripts/ebpf_replay.py` to seamlessly simulate real Linux kernel-level network interception natively on macOS. It parses a highly realistic kernel network capture file (`ebpf_capture.jsonl`).
+- **Global Discovery Engine**: The eBPF Replay Engine now natively handles auto-discovery of undocumented APIs on the fly, instantly assigning them a SHADOW status and generating default security postures.
+- **eBPF Interactive UI**: Added `EbpfControls.jsx` widget to the global TopNav, fully integrated with a new backend endpoint (`/api/v1/ebpf/state`) for real-time play, pause, and speed multiplier control of the telemetry stream.
+- **Styx AI Assistant**: Built a fully isolated local AI architect powered by Ollama (`llama3`). Integrated at `POST /api/v1/ai/chat` with real-time SQLite database context injection, allowing it to natively answer exact inventory and status queries. Temperature strictly locked to `0.1`.
+- **Global Chat UI**: Added `ChatbotWidget.jsx` globally to the React application.
+
+### Changed
+- **Removed Nginx Simulation**: The project officially abandoned Nginx `access.log` tailing and synthetic `traffic_loop.py` mock streams in favor of the eBPF Replay pipeline for maximum enterprise credibility.
+- **Authentication Resilience**: Hardened `AppContext.jsx` login logic to trim whitespace and lowercase inputs, preventing invisible trailing space failures on the demo login screen.
+
 ## [0.8.1] - 2026-06-25
 
 ### Added (Phase 1.5: Live Traffic Pivot)

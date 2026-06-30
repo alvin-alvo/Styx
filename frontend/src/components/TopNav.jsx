@@ -4,6 +4,7 @@ import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { Search, Sun, Moon, Menu, LayoutDashboard, Package, Shield, Link as LinkIcon, Zap, AlertTriangle } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import LanguageSwitcher from './LanguageSwitcher';
+import EbpfControls from './EbpfControls';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const FEATURES = [
@@ -147,13 +148,7 @@ export default function TopNav({ isSidebarOpen, onToggleSidebar }) {
 
       {/* Right: Controls */}
       <div className="flex items-center space-x-3 md:space-x-4">
-        <div className="hidden xs:flex items-center space-x-2 bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-200 dark:border-emerald-500/20">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-          </span>
-          <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">{t('topnav.live')}</span>
-        </div>
+        <EbpfControls />
 
         <LanguageSwitcher />
 
