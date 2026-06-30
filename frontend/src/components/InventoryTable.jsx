@@ -1,11 +1,16 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { formatDate, formatScore } from '../utils/formatters'
+import FilterBar from './FilterBar'
+import clsx from 'clsx'
+import { ShieldAlert, ShieldCheck, Shield } from 'lucide-react'
 
 export default function InventoryTable({ apis }) {
+  const { t } = useTranslation();
   const navigate = useNavigate()
-  const [sortBy, setSortBy] = useState('endpoint')
-  const [sortOrder, setSortOrder] = useState('asc')
+  const [sortBy, setSortBy] = useState('zombie_score')
+  const [sortOrder, setSortOrder] = useState('desc') // Default High to Low risk
   const [filterStatus, setFilterStatus] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -61,144 +66,141 @@ export default function InventoryTable({ apis }) {
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
     } else {
       setSortBy(column)
-      setSortOrder('asc')
+      setSortOrder('desc') // Default new sorts to desc for scores
     }
+  }
+
+  const handleSortToggle = () => {
+    setSortBy('zombie_score')
+    setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')
   }
 
   const statuses = [...new Set(apis.map((a) => a.current_status))].filter(Boolean)
 
   const StatusBadge = ({ status }) => {
-    const colorClass = {
-      ACTIVE: 'bg-emerald-900/50 text-emerald-200 border-emerald-500/30',
-      DEPRECATED: 'bg-amber-900/50 text-amber-200 border-amber-500/30',
-      ZOMBIE: 'bg-rose-900/50 text-rose-200 border-rose-500/30',
-      SHADOW: 'bg-purple-900/50 text-purple-200 border-purple-500/30',
-    }[status]
+    const badgeClass = clsx(
+      'px-2.5 py-0.5 rounded-full text-xs font-semibold border',
+      {
+        'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20': status === 'ACTIVE',
+        'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20': status === 'DEPRECATED',
+        'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-500/20': status === 'ZOMBIE',
+        'bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-500/20': status === 'SHADOW',
+        'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700': !['ACTIVE', 'DEPRECATED', 'ZOMBIE', 'SHADOW'].includes(status)
+      }
+    )
 
+    return <span className={badgeClass}>{status}</span>
+  }
+
+  const SortIcon = ({ column }) => {
+    if (sortBy !== column) return null
     return (
-      <span
-        className={`px-3 py-1 rounded-full text-xs font-semibold border ${colorClass || 'bg-gray-900 text-gray-200'}`}
-      >
-        {status}
+      <span className="inline-block ml-1 text-zinc-400">
+        {sortOrder === 'asc' ? '↑' : '↓'}
       </span>
     )
   }
 
-  const SortIcon = ({ column }) => {
-    if (sortBy !== column) return <span className="text-ice-blue/30 ml-2">⇅</span>
-    return <span className="text-ice-blue ml-2">{sortOrder === 'asc' ? '↑' : '↓'}</span>
-  }
-
   return (
-    <div className="space-y-4 bg-navy/30 rounded-lg shadow-lg border border-light-navy/30 overflow-hidden">
-      {/* Filter & Search Bar */}
-      <div className="px-6 py-4 border-b border-light-navy/30 flex flex-col sm:flex-row gap-4 items-center justify-between">
-        <div className="flex items-center space-x-4 w-full sm:w-auto">
-          <input 
-            type="text" 
-            placeholder="Search endpoint or owner..." 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-dark-navy border border-light-navy/50 text-ice-blue px-3 py-2 rounded text-sm w-full sm:w-64 focus:outline-none focus:border-ice-blue/50"
-          />
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            className="bg-dark-navy border border-light-navy/50 text-ice-blue px-3 py-2 rounded text-sm focus:outline-none focus:border-ice-blue/50"
-          >
-            <option value="">All Statuses</option>
-            {statuses.map((status) => (
-              <option key={status} value={status}>
-                {status}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="text-ice-blue/50 text-sm font-medium">
-          Showing {sorted.length} of {apis.length}
-        </div>
-      </div>
+    <div className="bg-white dark:bg-zinc-900 flex flex-col">
+      <FilterBar 
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        filterStatus={filterStatus}
+        onFilterChange={setFilterStatus}
+        statuses={statuses}
+        sortByRisk={sortBy === 'zombie_score' ? sortOrder : 'desc'}
+        onSortToggle={handleSortToggle}
+        totalCount={apis.length}
+        filteredCount={sorted.length}
+        placeholder={t("inv.search")}
+      />
 
-      {/* Table */}
       <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="bg-dark-navy border-b border-light-navy/30">
+        <table className="w-full text-sm text-left">
+          <thead className="text-xs uppercase bg-zinc-50 dark:bg-zinc-900/50 text-zinc-600 dark:text-zinc-400 border-b border-zinc-200 dark:border-zinc-800">
             <tr>
               <th
-                className="px-6 py-4 text-left text-ice-blue font-semibold cursor-pointer hover:bg-light-navy/20 transition"
+                className="px-6 py-4 font-semibold tracking-wider cursor-pointer hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors"
                 onClick={() => handleSort('endpoint')}
               >
                 Endpoint <SortIcon column="endpoint" />
               </th>
-              <th className="px-6 py-4 text-left text-ice-blue font-semibold">Security/Docs</th>
+              <th className="px-6 py-4 font-semibold tracking-wider">{t("inv.col2")}</th>
               <th
-                className="px-6 py-4 text-left text-ice-blue font-semibold cursor-pointer hover:bg-light-navy/20 transition"
+                className="px-6 py-4 font-semibold tracking-wider cursor-pointer hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors"
                 onClick={() => handleSort('owner')}
               >
                 Owner <SortIcon column="owner" />
               </th>
               <th
-                className="px-6 py-4 text-left text-ice-blue font-semibold cursor-pointer hover:bg-light-navy/20 transition"
+                className="px-6 py-4 font-semibold tracking-wider cursor-pointer hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors"
                 onClick={() => handleSort('status')}
               >
                 Status <SortIcon column="status" />
               </th>
               <th
-                className="px-6 py-4 text-left text-ice-blue font-semibold cursor-pointer hover:bg-light-navy/20 transition"
+                className="px-6 py-4 font-semibold tracking-wider cursor-pointer hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors"
                 onClick={() => handleSort('zombie_score')}
               >
                 Risk Score <SortIcon column="zombie_score" />
               </th>
               <th
-                className="px-6 py-4 text-left text-ice-blue font-semibold cursor-pointer hover:bg-light-navy/20 transition"
+                className="px-6 py-4 font-semibold tracking-wider cursor-pointer hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors"
                 onClick={() => handleSort('last_traffic_seen')}
               >
                 Last Seen <SortIcon column="last_traffic_seen" />
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-light-navy/20">
+          <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
             {sorted.length > 0 ? (
               sorted.map((api) => (
                 <tr
                   key={api.id}
-                  className="hover:bg-light-navy/20 transition cursor-pointer group"
-                  onClick={() => navigate(`/inventory/${api.id}`)}
+                  className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors cursor-pointer group"
+                  onClick={() => navigate(`/dashboard/inventory/${api.id}`)}
                 >
-                  <td className="px-6 py-4 text-ice-blue font-mono text-xs group-hover:text-white transition">
-                    <span className="text-ice-blue/50 mr-2 font-sans font-bold">{api.method}</span>
+                  <td className="px-6 py-4 font-mono text-xs text-zinc-900 dark:text-zinc-100">
+                    <span className="text-zinc-600 dark:text-zinc-400 mr-2 font-sans font-medium">{api.method}</span>
                     {api.endpoint}
                   </td>
-                  <td className="px-6 py-4 flex space-x-2">
-                    {api.has_documentation ? (
-                      <span title="Documented" className="text-emerald-400 text-lg">📄</span>
-                    ) : (
-                      <span title="Missing Documentation" className="text-rose-400 opacity-50 text-lg">📄</span>
-                    )}
+                  <td className="px-6 py-4">
+                     <div className="flex items-center gap-1.5">
+                       {api.has_documentation ? (
+                         <ShieldCheck className="w-4 h-4 text-emerald-500" title="Documented & Verified" />
+                       ) : (
+                         <ShieldAlert className="w-4 h-4 text-rose-500 opacity-80" title="Missing Documentation" />
+                       )}
+                     </div>
                   </td>
-                  <td className="px-6 py-4 text-ice-blue/80 text-xs">
+                  <td className="px-6 py-4 text-zinc-700 dark:text-zinc-300">
                     {api.owner ? (
-                      <span className="px-2 py-1 bg-light-navy/30 rounded border border-light-navy/50">{api.owner}</span>
+                      <span className="font-medium">{api.owner}</span>
                     ) : (
-                      <span className="text-ice-blue/40 italic">Unowned</span>
+                      <span className="text-zinc-400 dark:text-zinc-400 italic">Unassigned</span>
                     )}
                   </td>
                   <td className="px-6 py-4">
                     <StatusBadge status={api.current_status} />
                   </td>
-                  <td className="px-6 py-4 font-semibold">
-                    <span className={api.zombie_score >= 0.7 ? 'text-rose-400' : api.zombie_score >= 0.4 ? 'text-amber-400' : 'text-emerald-400'}>
+                  <td className="px-6 py-4 font-medium">
+                    <span className={clsx(
+                      api.zombie_score >= 0.7 ? 'text-rose-600 dark:text-rose-400' : 
+                      api.zombie_score >= 0.4 ? 'text-amber-600 dark:text-amber-400' : 
+                      'text-emerald-600 dark:text-emerald-400'
+                    )}>
                       {formatScore(api.zombie_score)}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-ice-blue/70 text-xs">
+                  <td className="px-6 py-4 text-zinc-600 dark:text-zinc-400 text-xs">
                     {formatDate(api.last_traffic_seen)}
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="6" className="px-6 py-12 text-center text-ice-blue/50">
+                <td colSpan="6" className="px-6 py-12 text-center text-zinc-600 dark:text-zinc-400">
                   No APIs found matching filters.
                 </td>
               </tr>

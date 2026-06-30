@@ -1,7 +1,9 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState, useMemo } from 'react'
 import DependencyGraph from './DependencyGraph'
 import { generateAISummary } from '../services/api'
 import ReactMarkdown from 'react-markdown'
+import { Sparkles, Bot } from 'lucide-react'
 
 export default function BlastRadiusSimulator({ apis, onSimulate }) {
   const [selectedApis, setSelectedApis] = useState([])
@@ -73,25 +75,25 @@ export default function BlastRadiusSimulator({ apis, onSimulate }) {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
       {/* Left Panel - API Selection */}
       <div className="space-y-4">
-        <h3 className="text-xl font-semibold text-ice-blue">Select APIs to Decommission</h3>
-        <div className="max-h-96 overflow-y-auto space-y-2 bg-navy/20 border border-light-navy/30 rounded p-4">
+        <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">Select APIs to Decommission</h3>
+        <div className="max-h-96 overflow-y-auto space-y-2 bg-zinc-50 dark:bg-zinc-800/20 border border-zinc-200 dark:border-zinc-800 rounded p-4">
           {sortedApis.map((api) => (
             <label
               key={api.id}
-              className="flex items-center space-x-3 p-3 hover:bg-light-navy/20 rounded cursor-pointer"
+              className="flex items-center space-x-3 p-3 hover:bg-white dark:bg-zinc-900 rounded cursor-pointer"
             >
               <input
                 type="checkbox"
                 checked={selectedApis.includes(api.id)}
                 onChange={() => handleToggleApi(api.id)}
-                className="rounded border-light-navy/50 bg-navy text-ice-blue focus:ring-ice-blue"
+                className="rounded border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:ring-ice-blue"
               />
               <div className="flex-1">
-                <p className="text-ice-blue font-mono text-sm">{api.endpoint}</p>
-                <p className="text-ice-blue/50 text-xs">{api.method} • {api.current_status}</p>
+                <p className="text-zinc-900 dark:text-zinc-100 font-mono text-sm">{api.endpoint}</p>
+                <p className="text-zinc-600 dark:text-zinc-400 text-xs">{api.method} • {api.current_status}</p>
               </div>
               <div className="text-right">
-                <span className="text-xs bg-dark-navy text-ice-blue/70 px-2 py-1 rounded">
+                <span className="text-xs bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 px-2 py-1 rounded">
                   {api.incoming_dependencies || 0} callers
                 </span>
               </div>
@@ -102,7 +104,7 @@ export default function BlastRadiusSimulator({ apis, onSimulate }) {
         <button
           onClick={handleSimulate}
           disabled={simulating || selectedApis.length === 0}
-          className="w-full px-4 py-3 bg-light-navy hover:bg-navy disabled:bg-gray-700 disabled:cursor-not-allowed rounded text-ice-blue font-semibold transition"
+          className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed rounded text-white font-semibold transition"
         >
           {simulating ? 'Simulating...' : `Simulate Decommission (${selectedApis.length})`}
         </button>
@@ -111,14 +113,14 @@ export default function BlastRadiusSimulator({ apis, onSimulate }) {
       {/* Right Panel - Results */}
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <h3 className="text-xl font-semibold text-ice-blue">Impact Analysis</h3>
+          <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">Impact Analysis</h3>
           {result && (
             <button
               onClick={handleAskAI}
               disabled={aiLoading}
               className="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 disabled:bg-purple-800 text-white text-sm rounded font-medium transition shadow-lg shadow-purple-500/20 flex items-center space-x-2"
             >
-              <span>✨</span>
+              <Sparkles className="w-4 h-4" />
               <span>{aiLoading ? 'AI is analyzing...' : 'Ask AI Analyst'}</span>
             </button>
           )}
@@ -131,7 +133,7 @@ export default function BlastRadiusSimulator({ apis, onSimulate }) {
         )}
 
         {!result && !error && (
-          <div className="bg-navy/20 border border-light-navy/30 rounded p-8 text-center text-ice-blue/50">
+          <div className="bg-zinc-50 dark:bg-zinc-800/20 border border-zinc-200 dark:border-zinc-800 rounded p-8 text-center text-zinc-600 dark:text-zinc-400">
             Select APIs and run simulation
           </div>
         )}
@@ -140,7 +142,7 @@ export default function BlastRadiusSimulator({ apis, onSimulate }) {
           <div className="space-y-4">
             {/* Visual Dependency Graph */}
             {result.graph && (
-              <div className="bg-navy/20 border border-light-navy/30 rounded overflow-hidden h-64">
+              <div className="bg-zinc-50 dark:bg-zinc-800/20 border border-zinc-200 dark:border-zinc-800 rounded overflow-hidden h-64">
                 <DependencyGraph data={result.graph} simulatedDecommission={selectedApis} />
               </div>
             )}
@@ -154,9 +156,9 @@ export default function BlastRadiusSimulator({ apis, onSimulate }) {
             {/* AI Analyst Summary Box */}
             {aiSummary && (
               <div className="relative p-[1px] rounded bg-gradient-to-r from-purple-500 via-fuchsia-500 to-purple-500 animate-gradient-xy">
-                <div className="bg-dark-navy p-6 rounded h-full w-full">
+                <div className="bg-white dark:bg-zinc-900 p-6 rounded h-full w-full">
                   <div className="flex items-center space-x-2 mb-4">
-                    <span className="text-xl">🤖</span>
+                    <Bot className="w-5 h-5 text-purple-400" />
                     <h2 className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
                       AI Executive Summary
                     </h2>
@@ -164,7 +166,7 @@ export default function BlastRadiusSimulator({ apis, onSimulate }) {
                       {aiSummary.model_used}
                     </span>
                   </div>
-                  <div className="text-ice-blue/80 prose prose-invert prose-sm max-w-none prose-p:leading-relaxed prose-li:my-0.5">
+                  <div className="text-zinc-700 dark:text-zinc-300 prose prose-invert prose-sm max-w-none prose-p:leading-relaxed prose-li:my-0.5">
                     <ReactMarkdown>{aiSummary.summary}</ReactMarkdown>
                   </div>
                 </div>
@@ -180,22 +182,22 @@ export default function BlastRadiusSimulator({ apis, onSimulate }) {
 
             {/* Metrics */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-navy/20 border border-light-navy/30 rounded p-4">
-                <p className="text-ice-blue/70 text-sm">Dependent Services</p>
-                <p className="text-2xl font-bold text-ice-blue">{result.dependent_services}</p>
+              <div className="bg-zinc-50 dark:bg-zinc-800/20 border border-zinc-200 dark:border-zinc-800 rounded p-4">
+                <p className="text-zinc-600 dark:text-zinc-400 text-sm">Dependent Services</p>
+                <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">{result.dependent_services}</p>
               </div>
-              <div className="bg-navy/20 border border-light-navy/30 rounded p-4">
-                <p className="text-ice-blue/70 text-sm">Traffic Impact</p>
-                <p className="text-2xl font-bold text-ice-blue">
+              <div className="bg-zinc-50 dark:bg-zinc-800/20 border border-zinc-200 dark:border-zinc-800 rounded p-4">
+                <p className="text-zinc-600 dark:text-zinc-400 text-sm">Traffic Impact</p>
+                <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
                   {(result.traffic_percentage * 100).toFixed(1)}%
                 </p>
               </div>
             </div>
 
             {/* Impact Score */}
-            <div className="bg-navy/20 border border-light-navy/30 rounded p-4">
-              <p className="text-ice-blue/70 text-sm mb-2">Overall Impact Score</p>
-              <div className="w-full bg-dark-navy rounded-full h-3 overflow-hidden">
+            <div className="bg-zinc-50 dark:bg-zinc-800/20 border border-zinc-200 dark:border-zinc-800 rounded p-4">
+              <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-2">Overall Impact Score</p>
+              <div className="w-full bg-white dark:bg-zinc-900 rounded-full h-3 overflow-hidden">
                 <div
                   className={`h-3 transition-all duration-500 ${
                     result.impact_score > 0.7
@@ -207,13 +209,13 @@ export default function BlastRadiusSimulator({ apis, onSimulate }) {
                   style={{ width: `${result.impact_score * 100}%` }}
                 ></div>
               </div>
-              <p className="text-ice-blue mt-2 font-semibold">{(result.impact_score * 100).toFixed(0)}%</p>
+              <p className="text-zinc-900 dark:text-zinc-100 mt-2 font-semibold">{(result.impact_score * 100).toFixed(0)}%</p>
             </div>
 
             {/* Recommendation */}
-            <div className="bg-light-navy/20 border border-light-navy/50 rounded p-4">
-              <p className="text-ice-blue font-semibold mb-2">Recommendation</p>
-              <p className="text-ice-blue/80">{result.recommendation}</p>
+            <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded p-4">
+              <p className="text-zinc-900 dark:text-white font-semibold mb-2">Recommendation</p>
+              <p className="text-zinc-700 dark:text-zinc-300">{result.recommendation}</p>
             </div>
           </div>
         )}

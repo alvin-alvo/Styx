@@ -1,8 +1,12 @@
-import React, { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next';
+import React, { useState, useEffect, useMemo } from 'react'
 import { getAlerts, acknowledgeAlert } from '../services/api'
 import AlertsFeed from '../components/AlertsFeed'
+import FilterBar from '../components/FilterBar'
+import { PageSkeleton } from '../components/Skeleton'
 
 export default function Alerts() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [alerts, setAlerts] = useState([])
@@ -61,15 +65,28 @@ export default function Alerts() {
     }
   }
 
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filterSeverity, setFilterSeverity] = useState('')
+
+  const filteredAlerts = useMemo(() => {
+    let data = [...alerts]
+    if (filterSeverity) {
+      data = data.filter((a) => a.severity === filterSeverity)
+    }
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase()
+      data = data.filter((a) => 
+        (a.alert_type || '').toLowerCase().includes(q) || 
+        (a.api_id || '').toLowerCase().includes(q)
+      )
+    }
+    return data
+  }, [alerts, searchQuery, filterSeverity])
+
+  const severities = [...new Set(alerts.map((a) => a.severity))].filter(Boolean)
+
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-ice-blue">
-          <div className="animate-spin text-3xl mb-4">⏳</div>
-          <p>Loading alerts...</p>
-        </div>
-      </div>
-    )
+    return <PageSkeleton />
   }
 
   if (error) {
@@ -84,11 +101,25 @@ export default function Alerts() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-ice-blue mb-2">Alerts</h1>
-        <p className="text-ice-blue/70">API lifecycle and security events</p>
+        <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">{t("alerts.title")}</h1>
+        <p className="text-zinc-600 dark:text-zinc-400">{t("alerts.subtitle")}</p>
       </div>
 
-      <AlertsFeed alerts={alerts} onAcknowledge={handleAcknowledge} />
+      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden">
+        <FilterBar 
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          filterStatus={filterSeverity}
+          onFilterChange={setFilterSeverity}
+          statuses={severities}
+          totalCount={alerts.length}
+          filteredCount={filteredAlerts.length}
+          placeholder={t("alerts.search")}
+        />
+        <div className="p-6">
+          <AlertsFeed alerts={filteredAlerts} onAcknowledge={handleAcknowledge} />
+        </div>
+      </div>
     </div>
   )
 }

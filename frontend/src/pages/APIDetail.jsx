@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { getAPIDetails, getAPIScore, generateAISummary } from '../services/api'
@@ -45,16 +46,16 @@ export default function APIDetail() {
     }
   }
 
-  if (loading) return <div className="text-ice-blue/70">Loading details...</div>
+  if (loading) return <div className="text-zinc-600 dark:text-zinc-400">Loading details...</div>
   if (error) return <div className="text-red-300">{error}</div>
-  if (!api || !score) return <div className="text-ice-blue/70">No data found.</div>
+  if (!api || !score) return <div className="text-zinc-600 dark:text-zinc-400">No data found.</div>
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-2xl font-bold text-ice-blue">{api.endpoint}</h1>
-          <p className="text-ice-blue/70 text-sm">{api.method} • {api.current_status}</p>
+          <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">{api.endpoint}</h1>
+          <p className="text-zinc-600 dark:text-zinc-400 text-sm">{api.method} • {api.current_status}</p>
         </div>
         <button
           onClick={handleAskAI}
@@ -74,7 +75,7 @@ export default function APIDetail() {
 
       {aiSummary && (
         <div className="relative p-[1px] rounded bg-gradient-to-r from-purple-500 via-fuchsia-500 to-purple-500 animate-gradient-xy">
-          <div className="bg-dark-navy p-6 rounded h-full w-full">
+          <div className="bg-white dark:bg-zinc-900 p-6 rounded h-full w-full">
             <div className="flex items-center space-x-2 mb-4">
               <span className="text-xl">🤖</span>
               <h2 className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
@@ -84,7 +85,7 @@ export default function APIDetail() {
                 {aiSummary.model_used}
               </span>
             </div>
-            <div className="text-ice-blue/80 prose prose-invert prose-sm max-w-none prose-p:leading-relaxed prose-li:my-0.5">
+            <div className="text-zinc-700 dark:text-zinc-300 prose prose-invert prose-sm max-w-none prose-p:leading-relaxed prose-li:my-0.5">
               <ReactMarkdown>{aiSummary.summary}</ReactMarkdown>
             </div>
           </div>
@@ -99,7 +100,7 @@ export default function APIDetail() {
       />
 
       <div>
-        <h2 className="text-lg font-semibold text-ice-blue mb-3">Security Findings</h2>
+        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-3">Security Findings</h2>
         <SecurityFindings findings={score.security.findings} />
       </div>
     </div>

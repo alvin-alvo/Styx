@@ -1,8 +1,11 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState, useEffect } from 'react'
 import { getAPIs, getAPIDependencies } from '../services/api'
 import DependencyGraph from '../components/DependencyGraph'
+import { PageSkeleton } from '../components/Skeleton'
 
 export default function Graph() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [apis, setApis] = useState([])
@@ -45,14 +48,7 @@ export default function Graph() {
   }, [selectedApi])
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-ice-blue">
-          <div className="animate-spin text-3xl mb-4">⏳</div>
-          <p>Loading dependencies...</p>
-        </div>
-      </div>
-    )
+    return <PageSkeleton />
   }
 
   if (error) {
@@ -67,16 +63,16 @@ export default function Graph() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-ice-blue mb-2">Dependency Graph</h1>
-        <p className="text-ice-blue/70">Visualize API service dependencies</p>
+        <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">{t("graph.title")}</h1>
+        <p className="text-zinc-600 dark:text-zinc-400">Visualize API service dependencies</p>
       </div>
 
-      <div className="bg-light-navy/20 border border-light-navy/50 rounded-lg p-4">
-        <label className="text-ice-blue/70 text-sm font-medium block mb-3">Select API:</label>
+      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-4">
+        <label className="text-zinc-600 dark:text-zinc-400 text-sm font-medium block mb-3">Select API:</label>
         <select
           value={selectedApi || ''}
           onChange={(e) => setSelectedApi(e.target.value)}
-          className="w-full bg-navy border border-light-navy/50 text-ice-blue px-4 py-2 rounded text-sm focus:outline-none focus:border-ice-blue/50 mb-6"
+          className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 px-4 py-2 rounded text-sm focus:outline-none focus:border-blue-500 mb-6"
         >
           {apis.map((api) => (
             <option key={api.id} value={api.id}>
@@ -88,7 +84,7 @@ export default function Graph() {
         {graphData ? (
           <DependencyGraph data={graphData} />
         ) : (
-          <div className="text-center text-ice-blue/50 py-8">Loading graph...</div>
+          <div className="text-center text-zinc-600 dark:text-zinc-400 py-8">Loading graph...</div>
         )}
       </div>
     </div>
