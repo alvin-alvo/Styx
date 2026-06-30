@@ -7,6 +7,21 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-06-29
+
+### Added (Phase 2: Enterprise UI Modernization)
+- `frontend` — Completely overhauled the UI to an "Enterprise SaaS Modernism" aesthetic using the Tailwind `zinc`/`slate` neutral palette and 'Cobalt Blue' primary accents.
+- `lucide-react` — Replaced all legacy emojis and raw SVGs with professional Lucide icons (e.g., `ShieldAlert`, `RefreshCcw`).
+- Implemented full Light/Dark mode via `darkMode: 'class'` in Tailwind and a global toggle in the App header.
+- Dynamic breadcrumb navigation powered by `react-router-dom`.
+- Containerized modular layouts for all pages (`Inventory`, `Analytics`, `APIDetail`, `Security`, `Graph`, `Simulator`, `Alerts`).
+- Split-panel architecture in `BlastRadiusSimulator`.
+- `.dockerignore` added to `frontend/` to fix native binary resolution issues during `docker-compose build`.
+
+### Changed
+- `backend/scripts/log_ingestor.py` — Patched an `io.UnsupportedOperation: underlying stream is not seekable` crash when reading from Nginx Docker volumes.
+- `frontend/Dockerfile` — Ignored `package-lock.json` during build to resolve Alpine Linux `vite/rollup` binary incompatibilities.
+
 ## [0.8.1] - 2026-06-25
 
 ### Added (Phase 1.5: Live Traffic Pivot)

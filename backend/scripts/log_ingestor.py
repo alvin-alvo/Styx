@@ -13,8 +13,12 @@ from app.core.database import SessionLocal
 from app.models import API, APIStatus, Dependency
 from app.services.alert_engine import AlertEngine
 
-LOG_FILE_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "nginx", "logs", "access.log")
-OPENAPI_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "openapi.json")
+LOG_FILE_PATH = os.getenv("NGINX_LOG_PATH", "/app/logs/access.log")
+OPENAPI_PATH = os.getenv("OPENAPI_SPEC_PATH", "/app/openapi.json")
+
+if not os.path.exists(OPENAPI_PATH):
+    print(f"CRITICAL ERROR: OpenAPI spec not found at {OPENAPI_PATH}")
+    sys.exit(1)
 
 def load_openapi_endpoints():
     try:
@@ -157,30 +161,32 @@ def tail_logs():
         with open(LOG_FILE_PATH, 'r') as f:
             # Read last offset if exists
             try:
-                if os.path.exists(offset_file):
-                    with open(offset_file, 'r') as off_f:
-                        offset = int(off_f.read().strip())
-                    
-                    # If file is smaller than offset, it was likely rotated/truncated. Start from 0.
-                    f.seek(0, os.SEEK_END)
-                    if f.tell() < offset:
-                        f.seek(0)
+                if f.seekable():
+                    if os.path.exists(offset_file):
+                        with open(offset_file, 'r') as off_f:
+                            offset = int(off_f.read().strip())
+                        
+                        # If file is smaller than offset, it was likely rotated/truncated. Start from 0.
+                        f.seek(0, os.SEEK_END)
+                        if f.tell() < offset:
+                            f.seek(0)
+                        else:
+                            f.seek(offset)
                     else:
-                        f.seek(offset)
-                else:
-                    # First run: start from the end to avoid processing old logs
-                    f.seek(0, os.SEEK_END)
+                        # First run: start from the end to avoid processing old logs
+                        f.seek(0, os.SEEK_END)
             except Exception as e:
                 print(f"Warning: Failed to read offset, starting from end. {e}")
-                f.seek(0, os.SEEK_END)
+                if f.seekable():
+                    f.seek(0, os.SEEK_END)
 
             lines_processed = 0
             while True:
-                current_offset = f.tell()
+                current_offset = f.tell() if f.seekable() else 0
                 line = f.readline()
                 if not line:
                     # Check for truncation/rotation
-                    if f.tell() < current_offset:
+                    if f.seekable() and f.tell() < current_offset:
                          f.seek(0)
                     time.sleep(0.1)
                     continue
@@ -188,7 +194,7 @@ def tail_logs():
                 process_log_line(line, allowed_endpoints, db)
                 
                 lines_processed += 1
-                if lines_processed % 10 == 0:
+                if lines_processed % 10 == 0 and f.seekable():
                     with open(offset_file, 'w') as off_f:
                         off_f.write(str(f.tell()))
                         

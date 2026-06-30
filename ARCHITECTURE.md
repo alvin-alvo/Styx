@@ -25,9 +25,10 @@ Styx is built as a multi-tier application designed to intercept, analyze, and vi
 
 5. **Frontend Application (React + Vite)**
    - **Role:** User interface and visualization.
-   - **Details:** A React 18 application built with Vite and styled using Tailwind CSS. Key visualizations include:
+   - **Details:** A React 18 application built with Vite and styled using Tailwind CSS (utilizing a `zinc`/`slate` Enterprise SaaS design system). Key visualizations include:
      - **D3.js:** For rendering interactive, force-directed dependency graphs.
      - **Recharts:** For displaying 30-day API usage trends, security risk matrices, and analytics dashboards.
+     - **Lucide React:** For clean, professional iconography throughout the platform.
 
 6. **Traffic Simulation Environment**
    - **Role:** Generates synthetic data for the hackathon prototype.

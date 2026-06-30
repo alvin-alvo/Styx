@@ -19,7 +19,7 @@ from app.schemas.analytics import (
     TopAtRiskResponse, TopAtRiskAPI, MLModelMetrics,
     AnalyticsOverviewResponse
 )
-from app.services.isolation_forest_scorer import get_scorer, train_model
+from app.services.lifecycle_scorer import LifecycleScorer
 from app.services.anomaly_detector import get_detector
 from app.services.security_analyzer import SecurityAnalyzer
 import time
@@ -51,7 +51,6 @@ def get_zombie_trend(db: Session = Depends(get_db)) -> ZombieTrendResponse:
 
     # Get all APIs and score them
     apis = db.query(API).all()
-    scorer = get_scorer()
 
     # Score all APIs
     zombie_count = 0
@@ -60,8 +59,8 @@ def get_zombie_trend(db: Session = Depends(get_db)) -> ZombieTrendResponse:
     shadow_count = 0
 
     for api in apis:
-        score, _ = scorer.calculate_zombie_score(api, db)
-        classification = scorer.classify_api(score)
+        result = LifecycleScorer.calculate_zombie_score(api, db)
+        classification = result["classification"]
         if classification == "ZOMBIE":
             zombie_count += 1
         elif classification == "ACTIVE":
@@ -96,6 +95,9 @@ def get_zombie_trend(db: Session = Depends(get_db)) -> ZombieTrendResponse:
         trend_direction = "increasing"
     elif last_zombies < first_zombies * 0.9:
         trend_direction = "decreasing"
+    else:
+        trend_direction = "stable"
+        
     res = ZombieTrendResponse(
         trend_data=trend_data,
         current_zombie_count=zombie_count,
@@ -113,7 +115,6 @@ def get_api_distribution(db: Session = Depends(get_db)) -> APIDistributionRespon
         return cached
 
     apis = db.query(API).all()
-    scorer = get_scorer()
 
     by_status = {"ACTIVE": 0, "DEPRECATED": 0, "ZOMBIE": 0, "SHADOW": 0}
     lifecycle_risks = []
@@ -123,8 +124,8 @@ def get_api_distribution(db: Session = Depends(get_db)) -> APIDistributionRespon
         by_status[api.current_status] += 1
 
         # Get lifecycle risk
-        score, _ = scorer.calculate_zombie_score(api, db)
-        lifecycle_risks.append(score)
+        result = LifecycleScorer.calculate_zombie_score(api, db)
+        lifecycle_risks.append(result["zombie_score"])
 
         # Get security risk
         security_info = security_analyzer.analyze_security(api, db.query(APISecurityPosture).filter_by(api_id=api.id).first())
@@ -181,7 +182,6 @@ def get_risk_heatmap(db: Session = Depends(get_db)) -> RiskHeatmapResponse:
         return cached
 
     apis = db.query(API).all()
-    scorer = get_scorer()
 
     # Create 3x3 heatmap
     heatmap_dict = {}
@@ -191,8 +191,8 @@ def get_risk_heatmap(db: Session = Depends(get_db)) -> RiskHeatmapResponse:
 
     for api in apis:
         # Get lifecycle risk
-        lifecycle_score, _ = scorer.calculate_zombie_score(api, db)
-        lifecycle_percent = lifecycle_score * 100
+        result = LifecycleScorer.calculate_zombie_score(api, db)
+        lifecycle_percent = result["zombie_score"] * 100
         if lifecycle_percent < 33:
             lifecycle_bin = "0-33"
         elif lifecycle_percent < 67:
@@ -219,6 +219,9 @@ def get_risk_heatmap(db: Session = Depends(get_db)) -> RiskHeatmapResponse:
         RiskCell(lifecycle_bin=k[0], security_bin=k[1], api_count=v)
         for k, v in heatmap_dict.items()
     ]
+    max_count = max(v for v in heatmap_dict.values()) if heatmap_dict else 0
+    min_count = min(v for v in heatmap_dict.values()) if heatmap_dict else 0
+    
     res = RiskHeatmapResponse(
         heatmap=heatmap,
         max_count=max_count,
@@ -235,13 +238,13 @@ def get_top_at_risk(limit: int = 10, db: Session = Depends(get_db)) -> TopAtRisk
         return cached
 
     apis = db.query(API).all()
-    scorer = get_scorer()
     detector = get_detector()
 
     api_risks = []
     for api in apis:
         # Get lifecycle risk
-        lifecycle_score, _ = scorer.calculate_zombie_score(api, db)
+        result = LifecycleScorer.calculate_zombie_score(api, db)
+        lifecycle_score = result["zombie_score"]
 
         # Get security risk
         security_info = security_analyzer.analyze_security(api, db.query(APISecurityPosture).filter_by(api_id=api.id).first())
@@ -283,24 +286,24 @@ def get_top_at_risk(limit: int = 10, db: Session = Depends(get_db)) -> TopAtRisk
 
 @router.post("/train-model")
 def train_ml_model(db: Session = Depends(get_db)) -> Dict:
-    """Train the Isolation Forest ML model on current database."""
-    train_model(db)
-    scorer = get_scorer()
+    """No-op: deterministic scorer requires no training, only population stats."""
+    detector = get_detector()
+    detector.fit(db)  # this just computes median/MAD per feature, near-instant
     return {
         "status": "success",
-        "message": "ML model trained successfully",
-        "is_trained": scorer.is_trained
+        "message": "Population statistics recalculated (deterministic model — no training required)",
+        "is_trained": detector.is_trained
     }
 
 
 @router.get("/overview", response_model=AnalyticsOverviewResponse)
 def get_analytics_overview(db: Session = Depends(get_db)) -> AnalyticsOverviewResponse:
     """Get complete analytics dashboard overview."""
-    scorer = get_scorer()
+    detector = get_detector()
 
     # Train model if not already trained
-    if not scorer.is_trained:
-        train_model(db)
+    if not detector.is_trained:
+        detector.fit(db)
 
     zombie_trend = get_zombie_trend(db)
     distribution = get_api_distribution(db)
@@ -308,12 +311,12 @@ def get_analytics_overview(db: Session = Depends(get_db)) -> AnalyticsOverviewRe
     top_at_risk = get_top_at_risk(db=db)
 
     ml_metrics = MLModelMetrics(
-        model_type="isolation_forest",
-        is_trained=scorer.is_trained,
+        model_type="deterministic_mad_zscore",
+        is_trained=detector.is_trained,
         training_samples=len(db.query(API).all()),
-        contamination_threshold=0.3,
+        contamination_threshold=0.0,
         features_count=8,
-        last_trained_at=datetime.utcnow() if scorer.is_trained else None
+        last_trained_at=datetime.utcnow() if detector.is_trained else None
     )
 
     return AnalyticsOverviewResponse(

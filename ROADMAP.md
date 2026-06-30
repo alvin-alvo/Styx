@@ -1,7 +1,7 @@
 # Styx Development Roadmap
 
-**Current Status:** Phase 1.5 ✅ Complete (June 25, 2026)  
-**Overall Progress:** MVP (Phase 1) + Live Ingestion Pivot (Phase 1.5) + Advanced Features (Phase 2.1)
+**Current Status:** Phase 2 ✅ Complete (June 29, 2026)  
+**Overall Progress:** MVP (Phase 1) + Live Ingestion Pivot (Phase 1.5) + Analytics (Phase 2.1) + Enterprise UI (Phase 2)
 
 ---
 
@@ -203,6 +203,26 @@
 
 ---
 
+## Phase 2: Enterprise UI Modernization ✅ COMPLETE (June 29, 2026)
+
+### UI/UX Overhaul
+- Upgraded the design system to a boardroom-ready "Enterprise SaaS Modernism" aesthetic.
+- Transitioned to Tailwind `zinc` and `slate` neutral scales with Cobalt Blue accents.
+- Flawless OS-aware Light/Dark mode implementation via a top-bar toggle.
+- Standardized all iconography using `lucide-react`.
+
+### Component Modernization
+- Refactored `DependencyGraph` and `SecurityMatrix` to render D3 SVGs cleanly in dark mode.
+- Split-panel `BlastRadiusSimulator` for improved user experience.
+- Dense, scannable `AlertsFeed` styled like a professional monitoring tool.
+
+### Build/Infrastructure
+- Fixed frontend `Dockerfile` to successfully install native Alpine Linux Rollup binaries.
+- Applied `.dockerignore` to prevent host OS `node_modules` pollution.
+- Resolved Nginx volume-mount stream seeking issues in `log_ingestor.py`.
+
+---
+
 ## Phase 2.2: Infrastructure (Planned) ⏳
 
 ### Caching & Optimization
@@ -351,6 +371,6 @@
 
 ---
 
-**Last Updated:** June 25, 2026  
-**Roadmap Version:** 1.1.0  
+**Last Updated:** June 29, 2026  
+**Roadmap Version:** 1.2.0  
 **Next Review:** July 30, 2026
