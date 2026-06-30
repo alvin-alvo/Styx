@@ -37,37 +37,48 @@ def random_last_seen(min_days: int, max_days: int) -> tuple[datetime, int]:
 
 def seed_apis() -> list[API]:
     endpoint_pool = [
-        "/api/v1/payment",
-        "/api/v1/loan/application",
-        "/api/v2/credit-score",
-        "/api/v1/kyc/verify",
-        "/api/v1/customer/profile",
-        "/api/v1/card/tokenize",
-        "/api/v2/fraud/check",
-        "/api/v1/limits",
-        "/api/v1/transactions",
-        "/api/v2/underwriting/risk",
-        "/api/v1/notifications/sms",
-        "/api/v1/notifications/email",
-        "/api/v2/rewards/points",
-        "/api/v1/accounts/balance",
-        "/api/v1/accounts/statement",
-        "/api/v1/insurance/quote",
-        "/api/v2/investments/eligibility",
-        "/api/v1/mortgage/precheck",
-        "/api/v1/collections/case",
-        "/api/v1/disputes/raise",
-        "/api/v2/merchant/onboarding",
-        "/api/v1/wallet/topup",
-        "/api/v2/identity/score",
-        "/api/v1/payouts/initiate",
-        "/internal/v1/legacy/customer-dump",
+        # Stripe (Payment/Billing) - 25
+        "/v1/customers", "/v1/customers/{id}", "/v1/charges", "/v1/charges/{id}", "/v1/payment_intents",
+        "/v1/payment_intents/{id}", "/v1/payment_methods", "/v1/payment_methods/{id}", "/v1/invoices",
+        "/v1/invoices/{id}", "/v1/invoices/{id}/pay", "/v1/products", "/v1/products/{id}", "/v1/prices",
+        "/v1/prices/{id}", "/v1/subscriptions", "/v1/subscriptions/{id}", "/v1/tax_rates", "/v1/webhook_endpoints",
+        "/v1/refunds", "/v1/disputes", "/v1/payouts", "/v1/balance", "/v1/balance_transactions", "/v1/events",
+        
+        # Twilio (Voice/Messaging) - 25
+        "/2010-04-01/Accounts", "/2010-04-01/Accounts/{id}/Calls", "/2010-04-01/Accounts/{id}/Calls/{call_id}",
+        "/2010-04-01/Accounts/{id}/Messages", "/2010-04-01/Accounts/{id}/Messages/{message_id}", 
+        "/2010-04-01/Accounts/{id}/Conferences", "/2010-04-01/Accounts/{id}/Recordings", 
+        "/2010-04-01/Accounts/{id}/IncomingPhoneNumbers", "/2010-04-01/Accounts/{id}/Addresses", 
+        "/2010-04-01/Accounts/{id}/Queues", "/2010-04-01/Accounts/{id}/Applications", 
+        "/v2/Services", "/v2/Services/{id}", "/v2/Services/{id}/Channels", "/v2/Services/{id}/Users", 
+        "/v1/Flows", "/v1/Flows/{id}/Executions", "/v1/Workspaces", "/v1/Workspaces/{id}/Workers", 
+        "/v1/Workspaces/{id}/TaskQueues", "/2010-04-01/Accounts/{id}/Keys", "/2010-04-01/Accounts/{id}/Tokens", 
+        "/2010-04-01/Accounts/{id}/Usage/Records", "/2010-04-01/Accounts/{id}/AvailablePhoneNumbers/US/Local", "/2010-04-01/Accounts/{id}/SIP/Domains",
+        
+        # GitHub (Repo/Social) - 25
+        "/user", "/users/{username}", "/users/{username}/repos", "/orgs/{org}/repos", "/repos/{owner}/{repo}", 
+        "/repos/{owner}/{repo}/issues", "/repos/{owner}/{repo}/pulls", "/repos/{owner}/{repo}/commits", 
+        "/repos/{owner}/{repo}/branches", "/repos/{owner}/{repo}/releases", "/repos/{owner}/{repo}/actions/workflows", 
+        "/repos/{owner}/{repo}/actions/runs", "/search/repositories", "/search/code", "/search/users", 
+        "/emojis", "/gitignore/templates", "/licenses", "/rate_limit", "/events",
+        "/repos/{owner}/{repo}/collaborators", "/repos/{owner}/{repo}/hooks", "/repos/{owner}/{repo}/keys",
+        "/orgs/{org}/members", "/orgs/{org}/teams",
+        
+        # Shopify (E-commerce) - 25
+        "/admin/api/2024-01/products.json", "/admin/api/2024-01/products/{id}.json", "/admin/api/2024-01/orders.json", 
+        "/admin/api/2024-01/orders/{id}.json", "/admin/api/2024-01/customers.json", "/admin/api/2024-01/customers/{id}.json", 
+        "/admin/api/2024-01/inventory_items.json", "/admin/api/2024-01/inventory_levels.json", "/admin/api/2024-01/locations.json", 
+        "/admin/api/2024-01/discounts.json", "/admin/api/2024-01/price_rules.json", "/admin/api/2024-01/gift_cards.json", 
+        "/admin/api/2024-01/checkouts.json", "/admin/api/2024-01/draft_orders.json", "/admin/api/2024-01/fulfillments.json", 
+        "/admin/api/2024-01/smart_collections.json", "/admin/api/2024-01/custom_collections.json", "/admin/api/2024-01/themes.json", 
+        "/admin/api/2024-01/assets.json", "/admin/api/2024-01/webhooks.json", "/admin/api/2024-01/blogs.json",
+        "/admin/api/2024-01/articles.json", "/admin/api/2024-01/pages.json", "/admin/api/2024-01/redirects.json", "/admin/api/2024-01/script_tags.json"
     ]
 
-    methods = ["GET", "POST", "PUT"]
+    methods = ["GET", "POST", "PUT", "DELETE", "PATCH"]
     apis: list[API] = []
 
-    status_distribution = ([APIStatus.ACTIVE] * 15) + ([APIStatus.DEPRECATED] * 5) + ([APIStatus.ZOMBIE] * 3) + ([APIStatus.SHADOW] * 2)
+    status_distribution = ([APIStatus.ACTIVE] * 60) + ([APIStatus.DEPRECATED] * 20) + ([APIStatus.ZOMBIE] * 12) + ([APIStatus.SHADOW] * 8)
 
     for index, status in enumerate(status_distribution):
         endpoint = endpoint_pool[index]

@@ -100,6 +100,7 @@ export default function Analytics() {
             <Line type="monotone" dataKey="zombie_count" stroke="#ef4444" strokeWidth={2} name="Zombies" />
             <Line type="monotone" dataKey="active_count" stroke="#10b981" strokeWidth={2} name="Active" />
             <Line type="monotone" dataKey="deprecated_count" stroke="#f59e0b" strokeWidth={2} name="Deprecated" />
+            <Line type="monotone" dataKey="shadow_count" stroke="#8b5cf6" strokeWidth={2} name="Shadow" />
           </ComposedChart>
         </ResponsiveContainer>
         <div className="mt-4 p-4 bg-gray-50 rounded">

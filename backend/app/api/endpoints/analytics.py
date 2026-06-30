@@ -13,6 +13,7 @@ from app.core.database import get_db
 from app.models.api import API
 from app.models.dependency import Dependency
 from app.models.security import APISecurityPosture
+from app.models.lifecycle_score_history import LifecycleScoreHistory
 from app.schemas.analytics import (
     ZombieTrendResponse, APITrendPoint, APIDistributionResponse,
     APIDistributionBucket, RiskHeatmapResponse, RiskCell,
@@ -42,65 +43,64 @@ def set_cached(key, data):
 @router.get("/zombie-trend", response_model=ZombieTrendResponse)
 def get_zombie_trend(db: Session = Depends(get_db)) -> ZombieTrendResponse:
     """
-    Get zombie API trends over last 30 days.
-    Mock data: generates daily counts based on seed data variations.
+    Get zombie API trends over last 30 days based on recorded history.
     """
     cached = get_cached("zombie_trend")
     if cached:
         return cached
 
-    # Get all APIs and score them
-    apis = db.query(API).all()
-
-    # Score all APIs
-    zombie_count = 0
-    active_count = 0
-    deprecated_count = 0
-    shadow_count = 0
-
-    for api in apis:
-        result = LifecycleScorer.calculate_zombie_score(api, db)
-        classification = result["classification"]
-        if classification == "ZOMBIE":
-            zombie_count += 1
-        elif classification == "ACTIVE":
-            active_count += 1
-        elif classification == "DEPRECATED":
-            deprecated_count += 1
-        else:
-            shadow_count += 1
-
-    # Generate 30-day trend (mock: slight variations)
-    trend_data = []
     now = datetime.utcnow()
-    for day_offset in range(30, 0, -1):
+    cutoff_date = now - timedelta(days=30)
+    
+    # Query history
+    history_records = db.query(LifecycleScoreHistory).filter(
+        LifecycleScoreHistory.recorded_at >= cutoff_date
+    ).all()
+    
+    # Bucket rows by day (YYYY-MM-DD)
+    daily_counts = defaultdict(lambda: {"ZOMBIE": 0, "ACTIVE": 0, "DEPRECATED": 0, "SHADOW": 0})
+    for record in history_records:
+        day_str = record.recorded_at.strftime("%Y-%m-%d")
+        if record.classification in daily_counts[day_str]:
+            daily_counts[day_str][record.classification] += 1
+            
+    # Build APITrendPoint objects, forward-filling if no rows
+    trend_data = []
+    last_known_counts = {"ZOMBIE": 0, "ACTIVE": 0, "DEPRECATED": 0, "SHADOW": 0}
+    
+    for day_offset in range(29, -1, -1):
         date = now - timedelta(days=day_offset)
-        # Mock trend: slight variation around current counts
-        variation = (day_offset % 5) - 2
+        day_str = date.strftime("%Y-%m-%d")
+        
+        if day_str in daily_counts and sum(daily_counts[day_str].values()) > 0:
+            counts = daily_counts[day_str]
+            last_known_counts = counts.copy()
+        else:
+            counts = last_known_counts.copy()
+            
         trend_data.append(APITrendPoint(
-            date=date.strftime("%Y-%m-%d"),
-            zombie_count=max(0, zombie_count - variation),
-            active_count=max(0, active_count + variation),
-            deprecated_count=deprecated_count,
-            shadow_count=shadow_count
+            date=day_str,
+            zombie_count=counts["ZOMBIE"],
+            active_count=counts["ACTIVE"],
+            deprecated_count=counts["DEPRECATED"],
+            shadow_count=counts["SHADOW"]
         ))
+        
+    current_zombie_count = trend_data[-1].zombie_count
+    total_current = sum([trend_data[-1].zombie_count, trend_data[-1].active_count, trend_data[-1].deprecated_count, trend_data[-1].shadow_count])
+    zombie_percent = (current_zombie_count / total_current * 100) if total_current > 0 else 0
 
-    total = zombie_count + active_count + deprecated_count + shadow_count
-    zombie_percent = (zombie_count / total * 100) if total > 0 else 0
-
-    # Determine trend direction
     first_zombies = trend_data[0].zombie_count
-    last_zombies = trend_data[-1].zombie_count
-    if last_zombies > first_zombies * 1.1:
+    if current_zombie_count > first_zombies * 1.1:
         trend_direction = "increasing"
-    elif last_zombies < first_zombies * 0.9:
+    elif current_zombie_count < first_zombies * 0.9:
         trend_direction = "decreasing"
     else:
         trend_direction = "stable"
         
     res = ZombieTrendResponse(
         trend_data=trend_data,
-        current_zombie_count=zombie_count,
+        current_zombie_count=current_zombie_count,
         zombie_percentage=zombie_percent,
         trend_direction=trend_direction
     )

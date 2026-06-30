@@ -8,6 +8,7 @@ Calculates lifecycle risk scores for APIs based on multiple factors:
 - Dependency orphan status
 """
 
+import math
 from datetime import datetime, timezone
 from typing import Dict, Any
 from sqlalchemy.orm import Session
@@ -46,14 +47,20 @@ class LifecycleScorer:
         # Source: Wallarm's rogue-API detection methodology. Decay window chosen per 42Crunch State of API Security 2026 (90-day window).
         if api.last_traffic_seen:
             # Assuming last_traffic_seen is timezone naive in DB based on previous code
-            days_since = (datetime.utcnow() - api.last_traffic_seen.replace(tzinfo=None)).days
-            factors["traffic_decay"] = min(days_since / 90.0, 1.0)
+            days_since = max(0, (datetime.utcnow() - api.last_traffic_seen.replace(tzinfo=None)).days)
+            factors["traffic_decay"] = 1.0 - math.exp(-days_since / 30.0)
         else:
             factors["traffic_decay"] = 1.0
 
         # Factor 2: Documentation gap (25%)
         # Rationale: OWASP formally elevated this to its own top-10 category (API9:2023 'Improper Inventory Management').
-        factors["documentation"] = 0.0 if (api.owner and api.has_documentation) else 1.0
+        # Split into partial penalties: missing owner = 0.5, missing docs = 0.5
+        doc_penalty = 0.0
+        if not api.owner:
+            doc_penalty += 0.5
+        if not api.has_documentation:
+            doc_penalty += 0.5
+        factors["documentation"] = doc_penalty
 
         # Factor 3: Authentication weakness (20%)
         # Rationale: Broken Authentication is API2:2023. Missing Auth is the single most frequently reported vulnerability.
