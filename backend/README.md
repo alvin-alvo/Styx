@@ -36,7 +36,7 @@ Styx currently operates using a **Gateway Log Tailing** architecture to simulate
    **Terminal 1 (FastAPI Server):**
    ```bash
    source .venv/bin/activate
-   uvicorn app.main:app --reload --port 8000
+   uvicorn main:app --reload --port 8000
    ```
 
    **Terminal 2 (Log Ingestor):**

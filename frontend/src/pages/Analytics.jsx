@@ -14,8 +14,8 @@ export default function Analytics() {
     const fetchAnalytics = async () => {
       try {
         setLoading(true);
-        // First train model
-        await api.post('/api/v1/analytics/train-model');
+        // First calculate population statistics
+        await api.post('/api/v1/analytics/recalculate-stats');
         // Then get overview
         const response = await api.get('/api/v1/analytics/overview');
         setOverview(response.data);
@@ -53,7 +53,7 @@ export default function Analytics() {
     distribution,
     risk_heatmap,
     top_at_risk,
-    ml_model_metrics
+    scoring_engine_metrics
   } = overview;
 
   return (
@@ -61,26 +61,26 @@ export default function Analytics() {
       {/* Header */}
       <div className="bg-gradient-to-r from-navy to-blue-700 text-white rounded-lg p-6">
         <h1 className="text-3xl font-bold mb-2">Analytics Dashboard</h1>
-        <p className="text-blue-100">Phase 2.1: ML-Powered API Intelligence</p>
+        <p className="text-blue-100">Phase 2.1: API Intelligence</p>
       </div>
 
-      {/* ML Model Status */}
+      {/* Scoring Engine Status */}
       <div className="grid grid-cols-4 gap-4">
         <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="text-sm text-gray-600">Model Type</div>
-          <div className="text-lg font-bold">{ml_model_metrics.model_type}</div>
+          <div className="text-sm text-gray-600">Scoring Method</div>
+          <div className="text-lg font-bold">{scoring_engine_metrics.model_type}</div>
         </div>
-        <div className={`rounded-lg border p-4 ${ml_model_metrics.is_trained ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'}`}>
-          <div className="text-sm text-gray-600">Training Status</div>
-          <div className="text-lg font-bold">{ml_model_metrics.is_trained ? '✓ Trained' : 'Not Trained'}</div>
+        <div className={`rounded-lg border p-4 ${scoring_engine_metrics.is_trained ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'}`}>
+          <div className="text-sm text-gray-600">Stats Status</div>
+          <div className="text-lg font-bold">{scoring_engine_metrics.is_trained ? '✓ Calculated' : 'Not Calculated'}</div>
         </div>
         <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="text-sm text-gray-600">Training Samples</div>
-          <div className="text-lg font-bold">{ml_model_metrics.training_samples}</div>
+          <div className="text-sm text-gray-600">Total Samples</div>
+          <div className="text-lg font-bold">{scoring_engine_metrics.training_samples}</div>
         </div>
         <div className="bg-white rounded-lg border border-gray-200 p-4">
           <div className="text-sm text-gray-600">Features</div>
-          <div className="text-lg font-bold">{ml_model_metrics.features_count}</div>
+          <div className="text-lg font-bold">{scoring_engine_metrics.features_count}</div>
         </div>
       </div>
 

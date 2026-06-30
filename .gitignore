@@ -126,3 +126,4 @@ dmypy.json
 # Misc
 *.bak
 .cache/
+nginx/logs/

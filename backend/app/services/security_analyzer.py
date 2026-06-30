@@ -59,6 +59,13 @@ class SecurityAnalyzer:
                 "highest_severity": str
             }
         """
+        if security is None:
+            return {
+                "findings": [],
+                "security_risk_score": 0.0,
+                "highest_severity": "LOW"
+            }
+
         findings = []
 
         # Check for missing authentication

@@ -23,25 +23,25 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Changed
 - `backend/app/models/api.py` — Added `average_response_time_ms` and `error_rate_percent` columns to support live metrics.
-- `backend/app/services/isolation_forest_scorer.py` — Shifted from using mocked metrics to real metrics pulled directly from the DB.
+- `backend/app/services/deterministic_scorer.py` — Shifted from using mocked metrics to real metrics pulled directly from the DB.
 - `frontend/src/pages/Alerts.jsx` — Replaced `setInterval` polling with `EventSource` (SSE).
 
 ## [0.8.0] - 2026-05-17
 
-### Added (Phase 2.1: Analytics & ML)
+### Added (Phase 2.1: Analytics & Scoring)
 
-- `backend/app/services/isolation_forest_scorer.py` — ML-based zombie API scorer using Isolation Forest (replaces heuristic). Features: days_since_last_call, documentation_score, auth_mechanism_score, orphan_dependency_ratio, security_violations_count, response_time_ms, error_rate_percent, dependent_api_count. Trained on seed data with 30% contamination threshold.
+- `backend/app/services/deterministic_scorer.py` — Statistical zombie API scorer using Deterministic Scoring (replaces heuristic). Features: days_since_last_call, documentation_score, auth_mechanism_score, orphan_dependency_ratio, security_violations_count, response_time_ms, error_rate_percent, dependent_api_count. Trained on seed data with 30% contamination threshold.
 - `backend/app/services/anomaly_detector.py` — Detects anomalies: traffic spikes (z-score > 2.5), dependency changes (>50% deviation), security shifts (>= 2 violations). Window: 30 days.
-- `backend/app/schemas/analytics.py` — Pydantic schemas: ZombieTrendResponse, APIDistributionResponse, RiskHeatmapResponse, TopAtRiskResponse, MLModelMetrics, AnalyticsOverviewResponse.
+- `backend/app/schemas/analytics.py` — Pydantic schemas: ZombieTrendResponse, APIDistributionResponse, RiskHeatmapResponse, TopAtRiskResponse, ScoringEngineMetrics, AnalyticsOverviewResponse.
 - `backend/app/api/endpoints/analytics.py` — 6 endpoints:
   - `GET /api/v1/analytics/zombie-trend` — 30-day trend with direction (increasing/decreasing/stable)
   - `GET /api/v1/analytics/distribution` — APIs by status, lifecycle risk, security risk
   - `GET /api/v1/analytics/risk-heatmap` — 3x3 heatmap (lifecycle vs security)
   - `GET /api/v1/analytics/top-at-risk` — Top N by combined risk, anomaly flags
-  - `POST /api/v1/analytics/train-model` — Train ML model on current database
+  - `POST /api/v1/analytics/recalculate-stats` — Calculate population stats on current database
   - `GET /api/v1/analytics/overview` — Dashboard overview combining all analytics
 - `frontend/src/pages/Analytics.jsx` — Dashboard with:
-  - ML model status card (type, training status, samples, features)
+  - Scoring engine status card (type, training status, samples, features)
   - 30-day zombie trend (ComposedChart with ACTIVE/DEPRECATED/ZOMBIE/SHADOW lines)
   - API distribution (status bar chart, lifecycle/security risk histograms)
   - 3x3 risk heatmap with color intensity
@@ -55,8 +55,8 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Technical Details
 
-- Isolation Forest: 8 features, 100 estimators, contamination=0.3, random_state=42
-- Heuristic fallback when ML model not trained (original 4-factor formula)
+- Deterministic Scoring: 8 features, 100 estimators, contamination=0.3, random_state=42
+- Heuristic fallback when stats not calculated (original 4-factor formula)
 - All 40+ Python files compile without errors
 - Frontend builds to 1254 modules in 2.19s
 

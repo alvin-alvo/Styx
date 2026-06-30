@@ -71,8 +71,8 @@ class TopAtRiskResponse(BaseModel):
     critical_count: int
 
 
-class MLModelMetrics(BaseModel):
-    """ML model performance metrics."""
+class ScoringEngineMetrics(BaseModel):
+    """Scoring engine performance metrics."""
     model_type: str
     is_trained: bool
     training_samples: int
@@ -87,4 +87,4 @@ class AnalyticsOverviewResponse(BaseModel):
     distribution: APIDistributionResponse
     risk_heatmap: RiskHeatmapResponse
     top_at_risk: TopAtRiskResponse
-    ml_model_metrics: MLModelMetrics
+    scoring_engine_metrics: ScoringEngineMetrics

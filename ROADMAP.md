@@ -175,7 +175,7 @@
 
 ---
 
-## Phase 2.1: Analytics & ML ✅ COMPLETE (May 17, 2026)
+## Phase 2.1: Analytics & Scoring ✅ COMPLETE (May 17, 2026)
 
 ### Analytics Module
 
@@ -186,14 +186,14 @@
 
 ### Machine Learning
 
-- Isolation Forest ML model (8 features)
-- Replace heuristic scoring with ML predictions
+- Deterministic statistical scoring (8 features)
+- Replace heuristic scoring with statistical predictions
 - Anomaly detection on dependency changes
 - Predictive deprecation (APIs likely to be killed soon)
 
 ### Deliverables
 
-- `backend/app/services/isolation_forest_scorer.py` — ML scorer with 8-feature model
+- `backend/app/services/deterministic_scorer.py` — Statistical scorer with 8-feature model
 - `backend/app/services/anomaly_detector.py` — Traffic, dependency, security anomaly detection
 - `backend/app/schemas/analytics.py` — 10 Pydantic response models
 - `backend/app/api/endpoints/analytics.py` — 6 analytics endpoints
@@ -322,7 +322,7 @@
 
 ### Phase 2.1 (Complete)
 
-- ✅ ML model demonstrates the feasibility of telemetry-driven risk scoring.
+- ✅ Statistical model demonstrates the feasibility of telemetry-driven risk scoring.
 - ✅ Anomaly detection 3 methods with <2% false positive rate
 - ✅ 6 new analytics endpoints
 - ✅ Analytics dashboard with 6 sections

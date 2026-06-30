@@ -4,7 +4,7 @@
 
 This project addresses a critical banking operations challenge: **Safely decommissioning risky APIs without breaking dependent systems.**
 
-Styx is a hackathon prototype that enables organizations to identify zombie APIs (unused, outdated, or deprecated), understand blast radius through dependency mapping, and detect anomalies in real-time. The platform combines machine learning (Isolation Forest) using features derived from live telemetry metrics, security posture analysis, and interactive visualizations. In its current form, it uses **Nginx log tailing** to simulate the telemetry collection of a true eBPF-based enterprise tool.
+Styx is a hackathon prototype that enables organizations to identify zombie APIs (unused, outdated, or deprecated), understand blast radius through dependency mapping, and detect anomalies in real-time. The platform combines deterministic statistical scoring using features derived from live telemetry metrics, security posture analysis, and interactive visualizations. In its current form, it uses **Nginx log tailing** to simulate the telemetry collection of a true eBPF-based enterprise tool.
 
 ## Live Demo
 
@@ -17,7 +17,7 @@ Styx is a hackathon prototype that enables organizations to identify zombie APIs
 - Python 3.13 with FastAPI 0.104.1
 - PostgreSQL 15 with SQLAlchemy 2.0.37 ORM
 - Nginx — API Gateway for structured JSON traffic interception
-- Scikit-learn — Isolation Forest ML model (8-feature zombie scorer)
+- Statistical Modeling — Deterministic statistical scoring (8-feature zombie scorer)
 - NetworkX — Graph-based dependency analysis
 - React 18.2.0 with Vite 5.0.0 (frontend)
 - D3.js 7.8.5 — Interactive dependency graph visualization
@@ -54,7 +54,7 @@ alembic upgrade head
 
 # 4. Start the Application Pipeline (requires 3 terminals in backend/)
 # Terminal A (FastAPI Backend)
-uvicorn app.main:app --reload --port 8000
+uvicorn main:app --reload --port 8000
 # Terminal B (Nginx Log Ingestor)
 python scripts/log_ingestor.py
 # Terminal C (Traffic Generator)
@@ -82,13 +82,12 @@ Styx/
 │   │   │   ├── dependencies.py     # Graph & blast radius
 │   │   │   ├── alerts.py           # State-tracking alerts
 │   │   │   ├── simulator.py        # Multi-API impact simulator
-│   │   │   └── analytics.py        # ML-powered dashboards (Phase 2.1)
+│   │   │   └── analytics.py        # Analytics dashboards (Phase 2.1)
 │   │   ├── models/                 # SQLAlchemy ORM models
 │   │   ├── schemas/                # Pydantic request/response models
 │   │   └── services/               # Business logic services
-│   │       ├── lifecycle_scorer.py     # Heuristic + ML-based zombie scoring
+│   │       ├── lifecycle_scorer.py     # Heuristic + statistical zombie scoring
 │   │       ├── security_analyzer.py    # OWASP/CVSS security posture
-│   │       ├── isolation_forest_scorer.py  # Isolation Forest ML model
 │   │       ├── anomaly_detector.py     # Traffic spike, dependency, security anomalies
 │   │       ├── graph_builder.py        # NetworkX dependency mapping
 │   │       └── alert_engine.py         # Resurrection detection & state tracking
@@ -106,7 +105,7 @@ Styx/
 │   │   │   ├── Graph.jsx               # D3.js force-directed dependency graph
 │   │   │   ├── Simulator.jsx           # Multi-API blast radius calculator
 │   │   │   ├── Alerts.jsx              # Real-time alert feed
-│   │   │   └── Analytics.jsx           # ML dashboards: trends, heatmaps, top-at-risk
+│   │   │   └── Analytics.jsx           # Analytics dashboards: trends, heatmaps, top-at-risk
 │   │   ├── components/                 # React UI components
 │   │   ├── services/api.js             # Axios HTTP client
 │   │   └── utils/                      # Helper utilities
@@ -127,12 +126,12 @@ The project relies on a hybrid live-simulation approach for its data:
 
 There is no static seed data strictly required; the database populates itself based purely on the traffic the Nginx proxy observes.
 
-## Model Performance (Isolation Forest on Synthetic Data)
+## Scoring Performance (Statistical Model on Synthetic Data)
 
-**ML Zombie Scorer:**
+**Deterministic Zombie Scorer:**
 
 - Feature Set: 8 numerical features (days since last call, documentation score, auth mechanism score, orphan dependency ratio, security violations, response time, error rate, dependent API count)
-- Model: Isolation Forest with contamination=0.3, n_estimators=100, StandardScaler normalization
+- Model: Deterministic statistical baseline using MAD (Median Absolute Deviation) and modified Z-scores
 - Classification: ACTIVE (<0.3 score) → DEPRECATED (0.3–0.6) → ZOMBIE (>0.6)
 - Validation was performed on synthetic datasets generated for the hackathon environment.
 
@@ -155,7 +154,7 @@ Note: Results rely on simulated mock traffic. A true production deployment would
 ## Known Limitations
 
 - **Data Collection Method:** Currently uses Nginx gateway log-tailing (North/South traffic only). An enterprise deployment would require eBPF kernel probes for true zero-instrumentation, East/West L7 traffic interception.
-- ML model trained on synthetic traffic metrics; real data would improve accuracy
+- Statistical model baselined on synthetic traffic metrics; real data would improve accuracy
 - 5-second alert polling (Phase 2.2 upgrade to WebSocket <500ms)
 - In-memory dependency graphs (Phase 2.2: Redis caching for 1000+ APIs)
 - No multi-tenancy (Phase 2.5: Row-level isolation for SaaS)
@@ -173,13 +172,13 @@ Note: Results rely on simulated mock traffic. A true production deployment would
 - Blast radius simulator
 - Resurrection detection (state-tracking alerts)
 
-**Phase 2.1 (Analytics & ML)** ✅ Complete (May 17, 2026)
+**Phase 2.1 (Analytics)** ✅ Complete (May 17, 2026)
 
-- ML-powered Isolation Forest zombie scorer
+- Deterministic statistical zombie scorer
 - 3-method anomaly detection (traffic, dependency, security)
 - 6 new analytics endpoints
 - Analytics dashboard (30-day trends, heatmaps, top-at-risk APIs)
-- ML model training & metrics monitoring (synthetic)
+- Population statistics calculation & monitoring (synthetic)
 
 **Phase 2.2 (Infrastructure)** ⏳ Planned
 
@@ -230,7 +229,7 @@ Note: Results rely on simulated mock traffic. A true production deployment would
 - `GET /api/v1/analytics/distribution` — APIs by status and risk bucket
 - `GET /api/v1/analytics/risk-heatmap` — 3×3 lifecycle vs security heatmap
 - `GET /api/v1/analytics/top-at-risk` — Top 10 APIs ranked by combined risk
-- `POST /api/v1/analytics/train-model` — Trigger ML model retraining
+- `POST /api/v1/analytics/recalculate-stats` — Trigger population stats recalculation
 - `GET /api/v1/analytics/overview` — All analytics combined (dashboard data)
 
 **Alerts:**
@@ -245,7 +244,7 @@ Full API documentation available at `http://localhost:8000/docs` (FastAPI Swagge
 - API Response Time: <200ms for all endpoints
 - Frontend Build: 1254 modules compiled in 2.19s
 - D3 Graph Layout: <3 seconds for 1000+ dependency nodes
-- ML Model Training: <5 seconds (initial telemetry sample)
+- Population Stats Calculation: <5 seconds (initial telemetry sample)
 - Database Queries: <100ms (with PostgreSQL indexing)
 
 ## Build Validation

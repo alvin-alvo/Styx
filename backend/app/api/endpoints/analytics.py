@@ -16,7 +16,7 @@ from app.models.security import APISecurityPosture
 from app.schemas.analytics import (
     ZombieTrendResponse, APITrendPoint, APIDistributionResponse,
     APIDistributionBucket, RiskHeatmapResponse, RiskCell,
-    TopAtRiskResponse, TopAtRiskAPI, MLModelMetrics,
+    TopAtRiskResponse, TopAtRiskAPI, ScoringEngineMetrics,
     AnalyticsOverviewResponse
 )
 from app.services.lifecycle_scorer import LifecycleScorer
@@ -284,8 +284,8 @@ def get_top_at_risk(limit: int = 10, db: Session = Depends(get_db)) -> TopAtRisk
     return res
 
 
-@router.post("/train-model")
-def train_ml_model(db: Session = Depends(get_db)) -> Dict:
+@router.post("/recalculate-stats")
+def recalculate_stats(db: Session = Depends(get_db)) -> Dict:
     """No-op: deterministic scorer requires no training, only population stats."""
     detector = get_detector()
     detector.fit(db)  # this just computes median/MAD per feature, near-instant
@@ -310,7 +310,7 @@ def get_analytics_overview(db: Session = Depends(get_db)) -> AnalyticsOverviewRe
     risk_heatmap = get_risk_heatmap(db)
     top_at_risk = get_top_at_risk(db=db)
 
-    ml_metrics = MLModelMetrics(
+    scoring_metrics = ScoringEngineMetrics(
         model_type="deterministic_mad_zscore",
         is_trained=detector.is_trained,
         training_samples=len(db.query(API).all()),
@@ -324,5 +324,5 @@ def get_analytics_overview(db: Session = Depends(get_db)) -> AnalyticsOverviewRe
         distribution=distribution,
         risk_heatmap=risk_heatmap,
         top_at_risk=top_at_risk,
-        ml_model_metrics=ml_metrics
+        scoring_engine_metrics=scoring_metrics
     )
