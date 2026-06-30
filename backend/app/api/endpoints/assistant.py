@@ -5,6 +5,8 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Dict, Any
 
+import os
+
 router = APIRouter(prefix="/api/v1", tags=["assistant"])
 
 class AISummaryRequest(BaseModel):
@@ -15,8 +17,8 @@ class AISummaryResponse(BaseModel):
     summary: str
     model_used: str
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
-DEFAULT_MODEL = "llama3"
+OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434/api/generate")
+DEFAULT_MODEL = os.environ.get("OLLAMA_MODEL", "llama3")
 
 @router.post("/ai/summary", response_model=AISummaryResponse)
 def generate_ai_summary(request: AISummaryRequest):
