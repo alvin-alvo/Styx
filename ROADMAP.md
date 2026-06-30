@@ -1,356 +1,418 @@
-# Styx Development Roadmap
+# Styx Repo Roadmap
 
-**Current Status:** Phase 1.5 ✅ Complete (June 25, 2026)  
-**Overall Progress:** MVP (Phase 1) + Live Ingestion Pivot (Phase 1.5) + Advanced Features (Phase 2.1)
+**Goal:** Turn Styx into a high-fidelity, judge-ready API lifecycle intelligence product while keeping the implementation honest, explainable, and feasible.
 
----
-
-## Phase 1: MVP (Days 1–7) ✅ COMPLETE
-
-### Day 1: Backend Foundation ✅
-
-**Deliverables:**
-
-- FastAPI app with `/health` endpoint
-- PostgreSQL database connection
-- Alembic migrations (001_initial_schema)
-- SQLAlchemy models: API, TrafficSource, APISecurityPosture, Dependency, Alert
-- Seed scripts: `seed_data.py` (25 APIs + 40 dependencies), `mock_logs.py`
-- .env.example configuration
-
-**Status:** Production-ready | Code Quality: Zero errors
+This roadmap is repo-focused. It describes the changes that should be made in code, docs, data, and UI. The priority is maximum product credibility per engineering hour.
 
 ---
 
-### Day 2: Frontend Foundation ✅
+## Current Product Baseline
 
-#### React + Vite Setup
+Styx already has:
 
-- Vite dev server on port 5173
-- React 18.2.0 with TypeScript support
-- Tailwind CSS (navy #1E2761 + ice-blue #CADCFC)
-- React Router v6 (7 pages)
-- Axios HTTP client
-- ESM-compatible config
+- FastAPI backend with inventory, scoring, dependencies, simulator, alerts, and analytics endpoints
+- PostgreSQL persistence through SQLAlchemy and Alembic
+- Nginx gateway log tailing for no-SDK demo telemetry
+- React/Vite frontend with Inventory, API Detail, Security, Graph, Simulator, Alerts, and Analytics screens
+- deterministic lifecycle scoring with explainable factors
+- OWASP/CVSS-style security analysis
+- NetworkX dependency graph and blast-radius simulation
 
-#### Inventory Table
-
-- Sortable/filterable table (25 seeded APIs)
-- Status badges (ACTIVE/DEPRECATED/ZOMBIE/SHADOW)
-- Zombie score column
-- Row-click navigation to detail page
-
-**Status:** Production-ready | Code Quality: Zero warnings
+The current system is a strong prototype. The next work should make it feel like a polished enterprise product demo.
 
 ---
 
-### Day 3: Scoring Services ✅
+## Phase 0: Documentation Alignment
 
-#### Lifecycle Scorer
+**Status:** In progress
 
-- 4-factor weighted formula: 0.35×traffic_decay + 0.25×documentation + 0.20×auth_weakness + 0.20×dependency_orphan
-- Classification: ACTIVE (<0.4) → DEPRECATED (0.4–0.7) → ZOMBIE (>0.7)
-- Endpoint: `GET /api/v1/apis/{id}/score`
+### Required Changes
 
-#### Security Analyzer
+- Update docs to stop implying black-box ML is currently implemented.
+- State clearly that current scoring is deterministic and explainable.
+- Clarify that Nginx log tailing is the current telemetry path.
+- Clarify that eBPF, service mesh, and gateway integrations are roadmap telemetry sources.
+- Clarify that Styx should store metadata and aggregates, not full request/response payloads.
+- Clarify NVD vs NVIDIA:
+  - **NVD** = vulnerability/CVE enrichment.
+  - **NVIDIA NIM/API Catalog** = future AI inference backend.
+  - **Ollama** = future local/private LLM backend.
 
-- OWASP API Top 10 mapping
-- CVSS scores: no_auth (9.1), http_only (7.5), no_rate_limit (6.5), pii_exposure (8.0)
-- Severity classification (CRITICAL/HIGH/MEDIUM/LOW)
-- Integrated with API status
+### Files
 
-**Status:** Production-ready | Code Quality: All files compile
-
----
-
-### Day 4: Security Visualization ✅
-
-#### Explanation & Security Components
-
-- ExplanationCard: Progress bars for each scoring factor
-- SecurityFindings: Collapsible OWASP cards with CVSS scores
-- Severity badges with color coding
-- Detail view (`APIDetail.jsx`)
-
-#### Security Matrix
-
-- 2D scatter plot: Lifecycle Risk (X) vs Security Risk (Y)
-- Quadrants: Red (critical), Orange (high security), Yellow (high lifecycle), Green (healthy)
-- Interactive dots with hover tooltips
-- Legend with critical/healthy/total counts
-
-**Status:** Production-ready | Code Quality: Zero warnings
+- `README.md`
+- `ARCHITECTURE.md`
+- `WORKFLOW.md`
+- `ONBOARDING.md`
+- `backend/README.md`
+- `frontend/README.md`
+- `LOGIC.md`
+- `CITATION_LIST.md`
 
 ---
 
-### Day 5: Dependency Graph & Simulation ✅
+## Phase 1: Demo Data Quality
 
-#### Graph Builder Service
+**Priority:** Highest
 
-- NetworkX digraph construction
-- Impact score: 0.6×traffic_percentage + 0.4×normalized_dependent_count
-- Transitive dependency support
-- Blast radius calculation
+The demo should look like a banking API estate, not a random endpoint generator.
 
-#### Graph Endpoints
+### Backend Tasks
 
-- `GET /api/v1/apis/{id}/dependencies` → D3.js nodes/edges
-- `POST /api/v1/simulator/blast-radius` → multi-API impact
-- Severity classification (LOW/MEDIUM/HIGH/CRITICAL)
-- Recommendation generation
+- Update `backend/scripts/seed_data.py` to generate realistic enterprise APIs:
+  - Customer Profile API
+  - Identity Service
+  - Payment Gateway
+  - Transaction Ledger
+  - Fraud Detection
+  - Loan Eligibility
+  - KYC Verification
+  - Card Management
+  - ATM Gateway
+  - Mobile Banking API
+  - Notification Service
+  - Statement Service
+  - Partner Open Banking API
+- Use realistic owners:
+  - Payments Team
+  - Identity Team
+  - Fraud Team
+  - Digital Banking
+  - Risk Platform
+  - Platform Engineering
+  - Core Banking
+- Keep status mix believable:
+  - 60% ACTIVE
+  - 20% DEPRECATED
+  - 12% ZOMBIE
+  - 8% SHADOW
+- Generate realistic metadata:
+  - dormant days based on status
+  - owner/documentation based on status
+  - latency and error rate based on service type
+  - dependencies that reflect real banking flows
 
-**Status:** Production-ready | Code Quality: All tests pass
+### Acceptance Criteria
 
----
-
-### Day 6: Graph Visualization & Simulator ✅
-
-#### D3.js Dependency Graph
-
-- Force-directed layout with pan/zoom
-- Node types: Services (blue circles), APIs (colored squares by status)
-- Edge thickness: Proportional to call frequency
-- Summary stats: dependent services, impact score, severity
-- Refactored D3 utilities (`d3-helpers.js`)
-
-#### Blast Radius Simulator
-
-- Multi-select API checkboxes
-- Impact visualization: severity badge, metrics, progress bar
-- Recommendation text (color-coded)
-- Real-time recalculation
-
-**Status:** Production-ready | Code Quality: No build warnings
-
----
-
-### Day 7: Real-Time Alerts ✅
-
-#### Alert Engine
-
-- Resurrection: ZOMBIE → ACTIVE transition
-- Shadow discovery: INACTIVE → ACTIVE transition
-- Security violation: Security risk threshold breach
-- State-tracking: Only fires on transitions
-- Metadata enrichment: source IPs, user agents, triggers
-
-#### Attack Traffic Generator
-
-- 50 realistic malicious requests
-- TOR exit node IPs + suspicious user agents
-- Irregular timing (0.5–5s intervals)
-- DB integration: triggers resurrection alert
-- Output: `attack_traffic.json` + alert
-
-#### Alerts UI
-
-- AlertsFeed: Real-time polling (5s interval)
-- Alert cards: icon, type, severity, timestamp
-- AlertDetail: Expanded metadata view
-- Recommended actions + trigger timeline (Recharts)
-- Source IPs/User Agents sections
-- Acknowledge button
-
-**Status:** Production-ready | Code Quality: Frontend builds <700KB gzipped
+- Inventory reads like an enterprise system.
+- No obviously fake/random names dominate the demo.
+- Analytics charts show a healthy mix of statuses and risks.
 
 ---
 
-## Phase 1.5: Live Traffic Pivot ✅ COMPLETE (June 25, 2026)
+## Phase 2: Explainability UI
 
-### Live Log Ingestion
-- Nginx Gateway setup with structured JSON logging
-- Background daemon (`log_ingestor.py`) tailing access logs to dynamically upsert APIs and dependencies
-- Robust crash-recovery mechanisms via byte offset tracking
-- OpenAPI specification (`openapi.json`) for ground-truth matching
+**Priority:** Highest
 
-### Live Simulation
-- Mock FastAPI backend to inject programmable latency and error rates
-- Traffic generator script to simulate endless client load and rogue access attempts
+Judges should immediately understand why an API was classified.
 
-### Real-time Frontend
-- Upgraded polling to Server-Sent Events (SSE) for instant alert delivery
-- TTL caching on analytics endpoints to protect database performance during live ingestion
+### Frontend Tasks
 
-**Status:** Production-ready for demo environments
+- Upgrade `frontend/src/components/ExplanationCard.jsx`.
+- Add a "Why was this classified?" section to API details.
+- Show explicit evidence lines:
+  - No traffic in N days
+  - Missing owner
+  - Missing documentation
+  - Weak or missing authentication
+  - No dependent services
+  - Shadow endpoint not present in OpenAPI spec
+- Show formula weights:
+  - 35% traffic decay
+  - 25% documentation gap
+  - 20% authentication weakness
+  - 20% dependency orphan
 
----
+### Backend Tasks
 
-## Phase 2.1: Analytics & Scoring ✅ COMPLETE (May 17, 2026)
+- Optionally enrich `GET /api/v1/apis/{id}/score` with a `reasons` array.
+- Keep the existing formula unchanged unless there is a clear bug.
 
-### Analytics Module
+### Acceptance Criteria
 
-- Zombie API trends (30-day time-series)
-- API dependency distribution (histograms)
-- Security risk heatmap over time
-- Traffic pattern anomaly detection
-
-### Machine Learning
-
-- Deterministic statistical scoring (8 features)
-- Replace heuristic scoring with statistical predictions
-- Anomaly detection on dependency changes
-- Predictive deprecation (APIs likely to be killed soon)
-
-### Deliverables
-
-- `backend/app/services/deterministic_scorer.py` — Statistical scorer with 8-feature model
-- `backend/app/services/anomaly_detector.py` — Traffic, dependency, security anomaly detection
-- `backend/app/schemas/analytics.py` — 10 Pydantic response models
-- `backend/app/api/endpoints/analytics.py` — 6 analytics endpoints
-- `frontend/src/pages/Analytics.jsx` — Dashboard with 6 visualization sections
-
-**Status:** Production-ready | All 40+ Python files compile | Frontend builds 2.19s
+- A judge can look at one API detail screen and explain the classification back in 20 seconds.
+- The UI feels transparent rather than black-box.
 
 ---
 
-## Phase 2.2: Infrastructure (Planned) ⏳
+## Phase 3: Metadata-Only Storage Contract
 
-### Caching & Optimization
+**Priority:** High
 
-- Redis caching for graph queries (>100 APIs)
-- Query optimization (batch fetch, pagination)
-- Frontend code-splitting for large deployments
+Styx should be presented as privacy-conscious and enterprise-safe.
 
-### Rate Limiting & Throttling
+### Design Principle
 
-- FastAPI middleware for rate limiting
-- Alert threshold adjustments for large deployments
-- WebSocket upgrade for real-time alerts (<1s latency)
+Store only metadata and aggregates required for lifecycle decisions. Do not persist raw customer data, request bodies, response bodies, tokens, or secrets.
 
-### Observability
+### Backend Tasks
 
-- Prometheus metrics export
-- Grafana dashboards
-- Distributed tracing (Jaeger)
-- Application Performance Monitoring (APM)
+- Add a docs-backed ingestion contract:
+  - method
+  - path
+  - host
+  - status code
+  - latency
+  - timestamp
+  - source service or source IP
+  - auth-present boolean, not auth token
+  - request count aggregates
+  - error-rate aggregates
+- Redact or avoid storing:
+  - Authorization header values
+  - cookies
+  - request bodies
+  - response bodies
+  - customer identifiers
+  - account numbers
+  - raw PII
+- Add retention policy documentation for logs and score history.
 
-**Estimated Duration:** 6–7 hours
+### Acceptance Criteria
 
----
-
-## Phase 2.3: API Lifecycle Management (Planned) ⏳
-
-### OpenAPI Spec Drift
-
-- Spec version tracking
-- Breaking change detection (schema validation)
-- Deprecation warning system
-- Sunset header enforcement
-
-### Compliance Automation
-
-- DPDP (Data Protection) scoring
-- RBI (Reserve Bank of India) compliance checks
-- PII detection in API responses
-- Audit logs for compliance reports
-
-**Estimated Duration:** 4–5 hours
+- Docs clearly answer: "Are you storing customer data?"
+- Answer: "No. Styx stores metadata and aggregates for governance."
 
 ---
 
-## Phase 2.4: Performance & Reliability (Planned) ⏳
+## Phase 4: Inventory Polish
 
-### Advanced Caching
+**Priority:** High
 
-- Redis caching for all query results
-- Cache invalidation strategies
-- Session management
+Inventory is usually the first screen judges see.
 
-### Database Optimization
+### Frontend Tasks
 
-- Query indexing optimization
-- Partitioning for >1M records
-- Read replicas for reporting
-- Backup/recovery automation
+- Add search by endpoint, owner, method, and status.
+- Add filters for:
+  - lifecycle status
+  - owner
+  - documentation present/missing
+  - risk level
+- Add compact badges:
+  - owner
+  - docs present/missing
+  - auth present/missing
+  - last seen
+- Add pagination or a fixed-height scroll area for large datasets.
+- Add an executive summary strip:
+  - total APIs
+  - zombies
+  - shadow APIs
+  - high security risk
+  - safe decommission candidates
 
-**Estimated Duration:** 4–5 hours
+### Acceptance Criteria
 
----
-
-## Phase 2.5: Enterprise Features (Planned) ⏳
-
-### Multi-Tenancy
-
-- Tenant isolation at database level
-- Custom theme/branding per tenant
-- Role-based access control (RBAC)
-- API key management
-
-### Advanced Permissions
-
-- Fine-grained API access control
-- Approval workflows for API decommission
-- Change tracking (audit trail)
-- Notification routing (Slack, Email, PagerDuty)
-
-### Integrations
-
-- Kubernetes API discovery
-- Kong/Envoy gateway integration
-- Splunk/ELK log ingestion
-- ServiceNow CMDB sync
-
-**Estimated Duration:** 8+ hours
+- Inventory can be used as the first demo screen.
+- The page visually communicates product value before any click.
 
 ---
 
-## Performance Targets
+## Phase 5: Security Intelligence
 
-| Metric | Current | Target |
-| --- | --- | --- |
-| API Response | <200ms | <100ms |
-| Graph Layout | <3s (1000 nodes) | <1s (10K nodes) |
-| Alert Latency | 5s polling | <500ms WebSocket |
-| Frontend Bundle | 196KB gzipped | <150KB gzipped |
-| Page Load | <2s | <1s |
+**Priority:** Medium
 
----
+Security should become more credible without building a large scanner.
 
-## Success Criteria
+### NVD Roadmap
 
-### Phase 1 (Complete)
+NVD is the National Vulnerability Database. It is relevant for CVE enrichment, not AI.
 
-- ✅ All endpoints operational (7 endpoints)
-- ✅ Frontend deploys to production
-- ✅ 25 mock APIs in database
-- ✅ Scoring engine live
-- ✅ Graph visualization working
-- ✅ Alert engine detecting zombies
-- ✅ Zero critical bugs
-- ✅ <700KB frontend bundle
-- ✅ Documentation complete
+Future tasks:
 
-### Phase 2.1 (Complete)
+- Add optional CVE enrichment service.
+- Store CVE metadata only:
+  - CVE ID
+  - CVSS score
+  - severity
+  - published date
+  - description summary
+  - affected technology tag
+- Display CVE cards on Security Insights.
+- Link CVEs to APIs through service tags, gateway metadata, or declared technology ownership.
 
-- ✅ Statistical model demonstrates the feasibility of telemetry-driven risk scoring.
-- ✅ Anomaly detection 3 methods with <2% false positive rate
-- ✅ 6 new analytics endpoints
-- ✅ Analytics dashboard with 6 sections
-- ✅ All Python files compile
-- ✅ Frontend builds <150KB
+### Acceptance Criteria
 
-### Phase 2.2–2.5 (Enterprise Transition)
-
-- ⏳ Augment gateway telemetry with eBPF kernel agents for East-West traffic visibility
-- ⏳ 10K+ APIs supportable
-- ⏳ WebSocket alerts <500ms latency
-- ⏳ Compliance dashboards live
-- ⏳ RBAC enforced across platform
-- ⏳ SLA: 99.9% uptime
+- Security page can say: "This API is risky because of lifecycle signals and known vulnerability intelligence."
 
 ---
 
-## References
+## Phase 6: AI Investigation Assistant
 
-**External Integrations:**
+**Priority:** Medium-low for code, high for vision
 
-- Kong API Gateway: [https://konghq.com/](https://konghq.com/)
-- Kubernetes API: [https://kubernetes.io/docs/reference/generated/kubernetes-api/](https://kubernetes.io/docs/reference/generated/kubernetes-api/)
-- Jaeger Tracing: [https://www.jaegertracing.io/](https://www.jaegertracing.io/)
-- OpenTelemetry: [https://opentelemetry.io/](https://opentelemetry.io/)
+AI should be a future assistant layer, not the core scoring engine.
+
+### What AI Should Do
+
+- Explain why an API is risky in natural language.
+- Summarize blast-radius findings.
+- Suggest remediation steps.
+- Infer likely owner from repo/API metadata.
+- Generate a decommissioning ticket draft.
+- Answer: "Can we retire this API safely?"
+
+### What AI Should Not Do
+
+- Replace deterministic lifecycle scoring.
+- Invent dependency evidence.
+- Store raw payloads for prompting.
+- Make final decommissioning decisions.
+
+### Provider Options
+
+- **NVIDIA NIM / NVIDIA API Catalog**
+  - Best fit for enterprise/cloud inference and GPU-backed deployment story.
+  - Good roadmap item for judges who ask how AI scales.
+- **Ollama**
+  - Best fit for local/private inference and offline demos.
+  - Good roadmap item for privacy-sensitive environments.
+
+### Implementation Shape
+
+- Add a provider interface:
+  - `AIProvider.summarize_api_risk(api_metadata)`
+  - `AIProvider.suggest_remediation(score, findings, dependencies)`
+- Implement providers later:
+  - `NvidiaNimProvider`
+  - `OllamaProvider`
+  - `NoopProvider` for demos without AI
+- Prompt only metadata, never raw customer payloads.
+
+### Acceptance Criteria
+
+- Docs make the AI story ambitious but honest.
+- Judges understand AI is used for explanation and workflow acceleration, not fake scoring.
 
 ---
 
-**Last Updated:** June 25, 2026  
-**Roadmap Version:** 1.1.0  
-**Next Review:** July 30, 2026
+## Phase 7: Telemetry Roadmap
+
+**Priority:** Medium
+
+### Current
+
+```text
+Nginx gateway logs
+  -> log_ingestor.py
+  -> PostgreSQL metadata
+  -> scoring + dashboard
+```
+
+This proves no SDK is required for services that route through the gateway.
+
+### Future
+
+```text
+API Gateway / Service Mesh / eBPF
+  -> Telemetry Collector
+  -> Metadata Normalizer
+  -> Styx Backend
+  -> Risk Engine + Dashboard
+```
+
+### Future Integrations
+
+- Nginx
+- Kong
+- Apigee
+- AWS API Gateway
+- Azure API Management
+- Envoy/Istio
+- eBPF collectors
+
+### Acceptance Criteria
+
+- Docs clearly state current limitation: gateway-routed traffic only.
+- Roadmap clearly states how East-West service traffic would be added.
+
+---
+
+## Phase 8: Enterprise Hardening
+
+**Priority:** Medium
+
+### Future Tasks
+
+- Authentication:
+  - OAuth2/OIDC
+  - SAML
+  - Okta/Azure AD/Google Workspace
+- Authorization:
+  - Admin
+  - Security Analyst
+  - Platform Engineer
+  - Read-only Auditor
+- Database hardening:
+  - no default credentials
+  - TLS to PostgreSQL
+  - least-privilege DB roles
+  - encrypted backups
+  - point-in-time recovery
+  - audit logging
+- Backend hardening:
+  - JWT validation
+  - CORS restrictions
+  - rate limiting
+  - security headers
+  - error sanitization
+- Workflow:
+  - API retirement candidate
+  - owner review
+  - dependent-team approval
+  - security approval
+  - audit trail
+
+### Acceptance Criteria
+
+- The project is positioned as a prototype today and an enterprise control plane tomorrow.
+
+---
+
+## Phase 9: Presentation Assets
+
+**Priority:** High before judging
+
+### Assets To Add
+
+- architecture diagram
+- lifecycle scoring diagram
+- metadata-only ingestion diagram
+- demo user-flow diagram
+- roadmap graphic
+- screenshots of polished screens
+
+### Recommended Demo Order
+
+```text
+Inventory
+  -> API Detail
+  -> Security Findings
+  -> Dependency Graph
+  -> Blast Radius Simulator
+  -> Analytics
+  -> Roadmap
+```
+
+### Closing Message
+
+Styx does not just find zombie APIs. It helps prove whether retiring them is safe for the business.
+
+---
+
+## Do Not Build Before Demo
+
+Avoid these unless the core demo is already polished:
+
+- Kafka
+- Kubernetes
+- distributed collectors
+- real eBPF agent
+- production authentication
+- multi-tenancy
+- complex real-time streaming
+- black-box ML scoring
+- storing raw payloads
+
+These can be discussed as roadmap items, but they should not distract from the judge-visible product.

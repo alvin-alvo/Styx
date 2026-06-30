@@ -85,7 +85,9 @@ class LifecycleScorer:
         )
 
         # Classify based on CVSS-style qualitative banding convention (proportional thirds)
-        if zombie_score < 0.4:
+        if api.current_status == "SHADOW":
+            classification = "SHADOW"
+        elif zombie_score < 0.4:
             classification = "ACTIVE"
         elif zombie_score < 0.7:
             classification = "DEPRECATED"

@@ -6,6 +6,8 @@
 
 **Design Principle**: With ~25 seed APIs there is not enough data for a learned model to find real structure — sklearn's IsolationForest on n=25 effectively memorizes noise. A transparent formula is both more defensible to judges and more correct statistically (see anomaly detection rationale).
 
+**Storage Principle**: The scorer should consume metadata and aggregates only. Lifecycle scoring does not require request bodies, response bodies, tokens, cookies, customer records, or raw PII. Inputs should be normalized telemetry such as last-seen time, documentation status, auth-present flags, dependency counts, latency/error aggregates, and security posture metadata.
+
 ---
 
 ## 1. Lifecycle Zombie Score
@@ -88,3 +90,31 @@
 - **LOW**: `< 0.3`
 - **MEDIUM**: `0.3 - 0.7`
 - **HIGH**: `>= 0.7`
+
+---
+
+## 5. AI Roadmap Boundary
+
+AI is a roadmap layer for investigation and explanation, not the scoring authority.
+
+Recommended future AI tasks:
+
+- summarize why an API is risky
+- generate remediation checklists
+- draft decommissioning tickets
+- infer likely owners from metadata
+- explain blast-radius impact in plain English
+
+Non-goals:
+
+- replacing the deterministic zombie score
+- inventing missing dependency evidence
+- storing raw customer payloads for prompts
+- making final retirement decisions without human approval
+
+Provider options:
+
+- **NVIDIA NIM / NVIDIA API Catalog** for enterprise/cloud inference.
+- **Ollama** for local/private inference.
+
+All prompts should use metadata-only summaries produced by the backend.

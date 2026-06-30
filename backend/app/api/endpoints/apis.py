@@ -16,6 +16,9 @@ router = APIRouter(prefix="/api/v1", tags=["apis"])
 def list_apis(db: Session = Depends(get_db)):
     """List all APIs."""
     apis = db.query(API).all()
+    # Populate incoming dependencies count
+    for api in apis:
+        api.incoming_dependencies = len(api.dependencies)
     return apis
 
 

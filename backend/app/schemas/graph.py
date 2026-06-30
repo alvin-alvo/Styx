@@ -40,3 +40,4 @@ class BlastRadiusPayload(BaseModel):
     severity: str
     affected_apis: List[str]
     recommendation: str
+    graph: Optional[DependencyGraphPayload] = None

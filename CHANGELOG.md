@@ -7,6 +7,15 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+### Changed
+
+- Updated product documentation to position Styx as a metadata-first API lifecycle intelligence platform.
+- Replaced outdated roadmap language with a repo-focused plan covering demo data quality, explainability UI, metadata-only storage, NVD CVE enrichment, AI investigation providers, telemetry expansion, and enterprise hardening.
+- Clarified that current scoring is deterministic and explainable, while NVIDIA NIM/API Catalog and Ollama are future AI assistant provider options.
+- Clarified that NVD is the relevant future source for CVE/vulnerability enrichment and is separate from NVIDIA.
+- Documented the metadata-only ingestion rule: store operational metadata and aggregates, not raw payloads, tokens, secrets, account numbers, or unredacted PII.
+- Added `average_response_time_ms` and `error_rate_percent` to the API response schema for richer operational metadata display.
+
 ## [0.8.1] - 2026-06-25
 
 ### Added (Phase 1.5: Live Traffic Pivot)

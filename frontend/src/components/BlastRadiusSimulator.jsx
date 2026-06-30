@@ -1,10 +1,22 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
+import DependencyGraph from './DependencyGraph'
+import { generateAISummary } from '../services/api'
+import ReactMarkdown from 'react-markdown'
 
 export default function BlastRadiusSimulator({ apis, onSimulate }) {
   const [selectedApis, setSelectedApis] = useState([])
   const [simulating, setSimulating] = useState(false)
   const [result, setResult] = useState(null)
   const [error, setError] = useState(null)
+
+  const [aiSummary, setAiSummary] = useState(null)
+  const [aiLoading, setAiLoading] = useState(false)
+  const [aiError, setAiError] = useState(null)
+
+  // Sort APIs by incoming_dependencies (descending)
+  const sortedApis = useMemo(() => {
+    return [...apis].sort((a, b) => (b.incoming_dependencies || 0) - (a.incoming_dependencies || 0))
+  }, [apis])
 
   const handleToggleApi = (apiId) => {
     setSelectedApis((prev) =>
@@ -20,6 +32,7 @@ export default function BlastRadiusSimulator({ apis, onSimulate }) {
 
     setSimulating(true)
     setError(null)
+    setAiSummary(null) // Reset AI summary on new simulation
 
     try {
       const response = await onSimulate(selectedApis)
@@ -28,6 +41,20 @@ export default function BlastRadiusSimulator({ apis, onSimulate }) {
       setError(err.message || 'Simulation failed')
     } finally {
       setSimulating(false)
+    }
+  }
+
+  const handleAskAI = async () => {
+    if (!result) return
+    setAiLoading(true)
+    setAiError(null)
+    try {
+      const res = await generateAISummary(result, 'blast_radius')
+      setAiSummary(res.data)
+    } catch (err) {
+      setAiError(err.response?.data?.detail || err.message || 'Failed to connect to AI')
+    } finally {
+      setAiLoading(false)
     }
   }
 
@@ -48,7 +75,7 @@ export default function BlastRadiusSimulator({ apis, onSimulate }) {
       <div className="space-y-4">
         <h3 className="text-xl font-semibold text-ice-blue">Select APIs to Decommission</h3>
         <div className="max-h-96 overflow-y-auto space-y-2 bg-navy/20 border border-light-navy/30 rounded p-4">
-          {apis.map((api) => (
+          {sortedApis.map((api) => (
             <label
               key={api.id}
               className="flex items-center space-x-3 p-3 hover:bg-light-navy/20 rounded cursor-pointer"
@@ -62,6 +89,11 @@ export default function BlastRadiusSimulator({ apis, onSimulate }) {
               <div className="flex-1">
                 <p className="text-ice-blue font-mono text-sm">{api.endpoint}</p>
                 <p className="text-ice-blue/50 text-xs">{api.method} • {api.current_status}</p>
+              </div>
+              <div className="text-right">
+                <span className="text-xs bg-dark-navy text-ice-blue/70 px-2 py-1 rounded">
+                  {api.incoming_dependencies || 0} callers
+                </span>
               </div>
             </label>
           ))}
@@ -78,7 +110,19 @@ export default function BlastRadiusSimulator({ apis, onSimulate }) {
 
       {/* Right Panel - Results */}
       <div className="space-y-4">
-        <h3 className="text-xl font-semibold text-ice-blue">Impact Analysis</h3>
+        <div className="flex justify-between items-center">
+          <h3 className="text-xl font-semibold text-ice-blue">Impact Analysis</h3>
+          {result && (
+            <button
+              onClick={handleAskAI}
+              disabled={aiLoading}
+              className="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 disabled:bg-purple-800 text-white text-sm rounded font-medium transition shadow-lg shadow-purple-500/20 flex items-center space-x-2"
+            >
+              <span>✨</span>
+              <span>{aiLoading ? 'AI is analyzing...' : 'Ask AI Analyst'}</span>
+            </button>
+          )}
+        </div>
 
         {error && (
           <div className="bg-red-900/30 border border-red-700 rounded p-4 text-red-200">
@@ -94,10 +138,44 @@ export default function BlastRadiusSimulator({ apis, onSimulate }) {
 
         {result && (
           <div className="space-y-4">
-            {/* Severity Badge */}
-            <div className={`border rounded p-4 ${getSeverityColor(result.severity)}`}>
-              <p className="text-sm opacity-70 mb-1">Impact Severity</p>
-              <p className="text-2xl font-bold">{result.severity}</p>
+            {/* Visual Dependency Graph */}
+            {result.graph && (
+              <div className="bg-navy/20 border border-light-navy/30 rounded overflow-hidden h-64">
+                <DependencyGraph data={result.graph} simulatedDecommission={selectedApis} />
+              </div>
+            )}
+
+            {aiError && (
+              <div className="bg-red-900/30 border border-red-700 rounded p-4 text-red-200 text-sm">
+                {aiError}
+              </div>
+            )}
+
+            {/* AI Analyst Summary Box */}
+            {aiSummary && (
+              <div className="relative p-[1px] rounded bg-gradient-to-r from-purple-500 via-fuchsia-500 to-purple-500 animate-gradient-xy">
+                <div className="bg-dark-navy p-6 rounded h-full w-full">
+                  <div className="flex items-center space-x-2 mb-4">
+                    <span className="text-xl">🤖</span>
+                    <h2 className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+                      AI Executive Summary
+                    </h2>
+                    <span className="text-xs bg-purple-900/50 text-purple-200 px-2 py-0.5 rounded-full ml-auto">
+                      {aiSummary.model_used}
+                    </span>
+                  </div>
+                  <div className="text-ice-blue/80 prose prose-invert prose-sm max-w-none prose-p:leading-relaxed prose-li:my-0.5">
+                    <ReactMarkdown>{aiSummary.summary}</ReactMarkdown>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className={`border rounded p-4 ${getSeverityColor(result.severity)} col-span-2`}>
+                <p className="text-sm opacity-70 mb-1">Impact Severity</p>
+                <p className="text-2xl font-bold">{result.severity}</p>
+              </div>
             </div>
 
             {/* Metrics */}

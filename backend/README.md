@@ -10,6 +10,27 @@ Styx currently operates using a **Gateway Log Tailing** architecture to simulate
 - **Traffic Loop (`scripts/traffic_loop.py`):** Generates synthetic HTTP load against the Nginx gateway, including rogue/shadow API calls to trigger alerts.
 - **FastAPI Core:** Serves this data via REST and Server-Sent Events (SSE) to the frontend.
 
+## Backend Roadmap Priorities
+
+1. **Metadata-only ingestion**
+   - Persist method, path, status code, latency, timestamp, source identity, dependency edges, and aggregate metrics.
+   - Do not persist raw request bodies, response bodies, authorization tokens, cookies, secrets, or unredacted PII.
+   - Convert headers such as `Authorization` into booleans or posture flags before storage.
+
+2. **Realistic banking demo data**
+   - Upgrade `scripts/seed_data.py` with banking APIs, realistic owners, believable dormant durations, and dependency flows.
+   - Use deterministic values where possible so demo results are repeatable.
+
+3. **Explainability support**
+   - Keep lifecycle scoring deterministic.
+   - Optionally add a `reasons` array to score responses so the frontend can show "Why was this classified?"
+
+4. **Future integrations**
+   - NVD: CVE enrichment for security findings.
+   - NVIDIA NIM/API Catalog: enterprise/cloud AI investigation assistant.
+   - Ollama: local/private AI investigation assistant.
+   - eBPF/service mesh: production-grade East-West telemetry.
+
 ## Quick Start (Live Pipeline)
 
 1. **Start the Infrastructure (Nginx, Mock Services, Postgres):**

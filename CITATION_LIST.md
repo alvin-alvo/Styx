@@ -141,6 +141,30 @@
 - **Verification Note**: Used only as loose corroborating context for the general 'shadow API inventory is large' claim.
 - **Used By**: `components.3_security_risk_score.prevalence_context.shadow_api_inventory_share`
 
+### [C16] NIST National Vulnerability Database — CVE API
+- **Publisher**: National Institute of Standards and Technology (NIST)
+- **Type**: primary government developer documentation
+- **URL**: [https://nvd.nist.gov/developers/vulnerabilities](https://nvd.nist.gov/developers/vulnerabilities)
+- **Claim Supported**: NVD provides a JSON REST CVE API for retrieving single CVEs or collections of CVEs, including CVSS severity filters and CVE identifiers.
+- **Verification Note**: This supports the roadmap item for CVE enrichment on the Security Insights page. NVD is separate from NVIDIA.
+- **Used By**: `roadmap.security_intelligence.nvd_cve_enrichment`
+
+### [C17] NVIDIA API Catalog / NIM APIs
+- **Publisher**: NVIDIA
+- **Type**: official platform documentation / API catalog
+- **URL**: [https://build.nvidia.com/](https://build.nvidia.com/)
+- **Claim Supported**: NVIDIA exposes AI models, blueprints, and inference endpoints that can be used as a future enterprise/cloud AI backend.
+- **Verification Note**: This supports the optional AI investigation assistant roadmap. It does not support the lifecycle score itself.
+- **Used By**: `roadmap.ai_assistant.provider_options.nvidia_nim`
+
+### [C18] Ollama API Documentation
+- **Publisher**: Ollama
+- **Type**: official API documentation
+- **URL**: [https://docs.ollama.com/api/introduction](https://docs.ollama.com/api/introduction)
+- **Claim Supported**: Ollama provides an API for running and interacting with models, with a default local base URL at `http://localhost:11434/api`.
+- **Verification Note**: This supports the optional local/private AI investigation assistant roadmap. It does not support the lifecycle score itself.
+- **Used By**: `roadmap.ai_assistant.provider_options.ollama`
+
 ---
 
 ## Citation Strength Summary
@@ -148,6 +172,7 @@
 - **Primary Data-Derived Industry Reports**: C2
 - **Academic/Statistical Method Consistent Across Independent Secondaries**: C10, C11, C12, C13
 - **Vendor Reports (Single Source)**: C7, C15
+- **Official Integration Docs**: C16, C17, C18
 - **Aggregator Secondary Compilations (Weakest Tier)**: C14
 - **Definitional/Conceptual (Not Quantitative)**: C1, C9
 

@@ -17,13 +17,55 @@ Styx is a hackathon prototype that enables organizations to identify zombie APIs
 - Python 3.13 with FastAPI 0.104.1
 - PostgreSQL 15 with SQLAlchemy 2.0.37 ORM
 - Nginx — API Gateway for structured JSON traffic interception
-- Statistical Modeling — Deterministic statistical scoring (8-feature zombie scorer)
+- Statistical Modeling — Deterministic lifecycle scoring and anomaly analytics
 - NetworkX — Graph-based dependency analysis
 - React 18.2.0 with Vite 5.0.0 (frontend)
 - D3.js 7.8.5 — Interactive dependency graph visualization
 - Recharts 2.10.3 — 30-day trend charts and analytics dashboards
 - Tailwind CSS 3.3.5 — Responsive UI styling
 - Pydantic — Data validation for API schemas
+
+## Product Direction
+
+Styx is intentionally positioned as a **metadata-first API governance cockpit**, not a request/response data warehouse. The prototype stores only the operational metadata needed for lifecycle decisions:
+
+- endpoint, method, host, owner, and documentation status
+- last-seen timestamps, latency, status codes, and error-rate aggregates
+- dependency edges between callers and APIs
+- security posture flags and CVSS-style findings
+- alert metadata and lifecycle score history
+
+Production deployments should avoid storing full payloads, raw PII, secrets, tokens, or customer records. Raw traffic should be summarized at ingestion time, with sensitive fields redacted before persistence.
+
+## Judge-Focused Roadmap
+
+The next development work should increase demo credibility and enterprise readiness without overbuilding infrastructure:
+
+1. **Demo Data Upgrade**
+   - Replace generic endpoints with banking services such as Customer Profile, Identity, Payment Gateway, Transaction Ledger, Fraud Detection, Loan Eligibility, Card Management, ATM Gateway, and Mobile Banking.
+   - Use realistic owners such as Payments Team, Identity Team, Fraud Team, Digital Banking, Risk Platform, and Platform Engineering.
+   - Keep status distribution believable: mostly ACTIVE, some DEPRECATED, a small number of ZOMBIE and SHADOW APIs.
+
+2. **Explainability Upgrade**
+   - Add a visible "Why was this classified?" panel on API details.
+   - Show exact factors: traffic decay, documentation gap, auth weakness, and dependency orphan status.
+   - Keep lifecycle scoring deterministic and defensible; do not present the current prototype as black-box AI.
+
+3. **Metadata-Only Hardening**
+   - Store aggregated telemetry, not raw request/response bodies.
+   - Redact Authorization headers and PII at ingestion.
+   - Add retention policies for logs and telemetry history.
+   - Add database roles, TLS, secret management, audit logs, and encrypted backups before production use.
+
+4. **AI Assistant Roadmap**
+   - Optional future module: natural-language API investigation, ownership inference, remediation summaries, and incident explanation.
+   - **NVIDIA NIM / NVIDIA API Catalog** is relevant as a future enterprise/cloud inference backend.
+   - **Ollama** is relevant as a future local/private LLM backend for offline demos or privacy-sensitive deployments.
+   - AI should explain and summarize evidence; it should not replace deterministic lifecycle scoring.
+
+5. **Security Intelligence Roadmap**
+   - **NVD** (National Vulnerability Database) is relevant for vulnerability intelligence and CVE enrichment.
+   - This is different from NVIDIA. NVD helps security findings; NVIDIA helps AI inference.
 
 ## How to Run Locally
 
@@ -86,7 +128,7 @@ Styx/
 │   │   ├── models/                 # SQLAlchemy ORM models
 │   │   ├── schemas/                # Pydantic request/response models
 │   │   └── services/               # Business logic services
-│   │       ├── lifecycle_scorer.py     # Heuristic + statistical zombie scoring
+│   │       ├── lifecycle_scorer.py     # Explainable zombie scoring
 │   │       ├── security_analyzer.py    # OWASP/CVSS security posture
 │   │       ├── anomaly_detector.py     # Traffic spike, dependency, security anomalies
 │   │       ├── graph_builder.py        # NetworkX dependency mapping
@@ -126,14 +168,14 @@ The project relies on a hybrid live-simulation approach for its data:
 
 There is no static seed data strictly required; the database populates itself based purely on the traffic the Nginx proxy observes.
 
-## Scoring Performance (Statistical Model on Synthetic Data)
+## Scoring and Analytics
 
 **Deterministic Zombie Scorer:**
 
-- Feature Set: 8 numerical features (days since last call, documentation score, auth mechanism score, orphan dependency ratio, security violations, response time, error rate, dependent API count)
-- Model: Deterministic statistical baseline using MAD (Median Absolute Deviation) and modified Z-scores
-- Classification: ACTIVE (<0.3 score) → DEPRECATED (0.3–0.6) → ZOMBIE (>0.6)
-- Validation was performed on synthetic datasets generated for the hackathon environment.
+- Primary lifecycle formula: traffic decay, documentation gap, authentication weakness, and dependency orphan status.
+- Classification: ACTIVE (<0.4 score) → DEPRECATED (0.4–0.7) → ZOMBIE (>0.7)
+- Design goal: explainable evidence for judges, security teams, and platform owners.
+- Validation was performed on synthetic/demo datasets generated for the hackathon environment.
 
 **Anomaly Detection:**
 
@@ -147,14 +189,15 @@ There is no static seed data strictly required; the database populates itself ba
 - 30-day trend queries: <100ms
 - Heatmap generation: <50ms
 - Top-at-risk ranking: <150ms
-- Model training: <5 seconds (initial telemetry sample)
+- Population-stat calculation: <5 seconds (initial telemetry sample)
 
-Note: Results rely on simulated mock traffic. A true production deployment would require re-tuning the model with organic API telemetry.
+Note: Results rely on simulated mock traffic. A true production deployment would require real gateway, service-mesh, or eBPF telemetry and calibrated thresholds from organic API usage.
 
 ## Known Limitations
 
 - **Data Collection Method:** Currently uses Nginx gateway log-tailing (North/South traffic only). An enterprise deployment would require eBPF kernel probes for true zero-instrumentation, East/West L7 traffic interception.
-- Statistical model baselined on synthetic traffic metrics; real data would improve accuracy
+- Scoring thresholds are calibrated for demo data; real data would improve accuracy
+- Current prototype stores operational metadata, but production hardening should explicitly prevent raw payload, token, secret, and PII persistence
 - 5-second alert polling (Phase 2.2 upgrade to WebSocket <500ms)
 - In-memory dependency graphs (Phase 2.2: Redis caching for 1000+ APIs)
 - No multi-tenancy (Phase 2.5: Row-level isolation for SaaS)
@@ -183,6 +226,7 @@ Note: Results rely on simulated mock traffic. A true production deployment would
 **Phase 2.2 (Infrastructure)** ⏳ Planned
 
 - ⏳ Augment gateway telemetry with eBPF kernel agents for East-West traffic visibility
+- ⏳ Metadata-only telemetry contract with payload redaction and retention controls
 - ⏳ 10K+ APIs supportable
 - ⏳ Compliance dashboards live
 - ⏳ RBAC enforced across platform
@@ -191,6 +235,7 @@ Note: Results rely on simulated mock traffic. A true production deployment would
 **Phase 2.3 (API Lifecycle Management)** ⏳ Planned
 
 - OpenAPI spec drift detection
+- NVD CVE enrichment for security findings
 - Regulatory compliance scoring (DPDP, RBI)
 - Audit logging for all API changes
 
@@ -206,6 +251,7 @@ Note: Results rely on simulated mock traffic. A true production deployment would
 - RBAC with role definitions
 - Approval workflows for decommissioning
 - Slack/PagerDuty integrations
+- Optional AI investigation assistant via NVIDIA NIM/cloud inference or Ollama/local inference
 
 ## API Endpoints
 

@@ -22,9 +22,13 @@ In the development/demo environment, synthetic traffic is generated to simulate 
   - Identifies if the API is undocumented by checking against the `openapi.json` spec.
 - Data is upserted into the **PostgreSQL database** via SQLAlchemy.
 
-## 4. Machine Learning & Analysis (Backend)
+### Metadata-Only Rule
+
+The ingestion workflow should persist metadata, not full payloads. Styx should store method, path, host, timestamp, status code, latency, source identity, aggregate counts, dependency edges, security flags, and alert metadata. It should not store raw request bodies, response bodies, tokens, cookies, secrets, account numbers, or unredacted PII.
+
+## 4. Analysis (Backend)
 The **FastAPI Backend** constantly analyzes the incoming data to provide insights:
-- **Zombie Scoring:** An **Isolation Forest** model evaluates the API's behavior against 8 features (usage frequency, security violations, dependency count, etc.) to calculate a risk score, categorizing the API as ACTIVE, DEPRECATED, or ZOMBIE.
+- **Zombie Scoring:** A deterministic, explainable formula evaluates traffic decay, documentation gap, authentication weakness, and dependency orphan status to categorize APIs as ACTIVE, DEPRECATED, or ZOMBIE.
 - **Anomaly Detection:** The system looks for standard deviation breaches (Z-score > 2.5) in traffic or sudden shifts in security posture. If detected, an alert is generated.
 - **Blast Radius Calculation:** Using **NetworkX**, the backend evaluates the dependency tree to simulate what downstream systems would break if an API were decommissioned.
 
@@ -38,3 +42,22 @@ The **FastAPI Backend** constantly analyzes the incoming data to provide insight
 
 ## 6. Action and Remediation
 - Once an API is confidently identified as a "Zombie" with a minimal blast radius, the operations team can safely plan its decommissioning, armed with cryptographic proof of its non-usage and low impact.
+
+## 7. Future AI-Assisted Workflow
+
+The roadmap adds an optional AI investigation assistant after the deterministic evidence is already computed.
+
+Potential flow:
+
+1. User opens a risky API.
+2. Styx computes lifecycle score, security findings, and dependency impact.
+3. AI summarizes the evidence in plain language.
+4. AI drafts remediation steps or a Jira/ServiceNow ticket.
+5. Human owner approves or rejects the retirement action.
+
+Provider options:
+
+- **NVIDIA NIM / NVIDIA API Catalog:** future enterprise/cloud inference backend.
+- **Ollama:** future local/private inference backend.
+
+AI is not the source of truth. It explains metadata-backed evidence produced by Styx.

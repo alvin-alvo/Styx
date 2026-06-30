@@ -37,42 +37,40 @@ def random_last_seen(min_days: int, max_days: int) -> tuple[datetime, int]:
 
 def seed_apis() -> list[API]:
     endpoint_pool = [
-        # Stripe (Payment/Billing) - 25
-        "/v1/customers", "/v1/customers/{id}", "/v1/charges", "/v1/charges/{id}", "/v1/payment_intents",
-        "/v1/payment_intents/{id}", "/v1/payment_methods", "/v1/payment_methods/{id}", "/v1/invoices",
-        "/v1/invoices/{id}", "/v1/invoices/{id}/pay", "/v1/products", "/v1/products/{id}", "/v1/prices",
-        "/v1/prices/{id}", "/v1/subscriptions", "/v1/subscriptions/{id}", "/v1/tax_rates", "/v1/webhook_endpoints",
-        "/v1/refunds", "/v1/disputes", "/v1/payouts", "/v1/balance", "/v1/balance_transactions", "/v1/events",
+        # Payments & Transfers (Payments Team)
+        "/v1/payments/transfer", "/v1/payments/transfer/{id}", "/v1/payments/status", "/v1/payments/status/{id}",
+        "/v1/payments/schedule", "/v1/payments/schedule/{id}", "/v1/payments/international", "/v1/payments/international/quote",
+        "/v1/payments/batch", "/v1/payments/batch/{id}", "/v1/payments/history", "/v1/payments/refund",
+        "/v1/payments/limits", "/v1/payments/fee-schedule", "/v1/payments/methods", "/v1/payments/methods/{id}",
+        "/v1/payments/beneficiaries", "/v1/payments/beneficiaries/{id}", "/v1/payments/beneficiaries/validate", "/v1/payments/disputes",
+        "/v1/payments/disputes/{id}", "/v1/payments/settlement", "/v1/payments/clearing", "/v1/payments/webhooks",
+        "/v1/payments/reports",
         
-        # Twilio (Voice/Messaging) - 25
-        "/2010-04-01/Accounts", "/2010-04-01/Accounts/{id}/Calls", "/2010-04-01/Accounts/{id}/Calls/{call_id}",
-        "/2010-04-01/Accounts/{id}/Messages", "/2010-04-01/Accounts/{id}/Messages/{message_id}", 
-        "/2010-04-01/Accounts/{id}/Conferences", "/2010-04-01/Accounts/{id}/Recordings", 
-        "/2010-04-01/Accounts/{id}/IncomingPhoneNumbers", "/2010-04-01/Accounts/{id}/Addresses", 
-        "/2010-04-01/Accounts/{id}/Queues", "/2010-04-01/Accounts/{id}/Applications", 
-        "/v2/Services", "/v2/Services/{id}", "/v2/Services/{id}/Channels", "/v2/Services/{id}/Users", 
-        "/v1/Flows", "/v1/Flows/{id}/Executions", "/v1/Workspaces", "/v1/Workspaces/{id}/Workers", 
-        "/v1/Workspaces/{id}/TaskQueues", "/2010-04-01/Accounts/{id}/Keys", "/2010-04-01/Accounts/{id}/Tokens", 
-        "/2010-04-01/Accounts/{id}/Usage/Records", "/2010-04-01/Accounts/{id}/AvailablePhoneNumbers/US/Local", "/2010-04-01/Accounts/{id}/SIP/Domains",
+        # Identity & Access (Identity Team)
+        "/v1/identity/customers", "/v1/identity/customers/{id}", "/v1/identity/customers/{id}/profile",
+        "/v1/identity/kyc", "/v1/identity/kyc/{id}", "/v1/identity/kyc/documents", "/v1/identity/kyc/documents/{id}",
+        "/v1/identity/kyc/status", "/v1/identity/kyc/verify", "/v1/identity/auth/login", "/v1/identity/auth/logout",
+        "/v1/identity/auth/refresh", "/v1/identity/auth/mfa/setup", "/v1/identity/auth/mfa/verify", "/v1/identity/auth/password/reset",
+        "/v1/identity/devices", "/v1/identity/devices/{id}", "/v1/identity/sessions", "/v1/identity/sessions/{id}",
+        "/v1/identity/consents", "/v1/identity/consents/{id}", "/v1/identity/biometrics/enroll", "/v1/identity/biometrics/verify",
+        "/v1/identity/audit-logs", "/v1/identity/roles",
         
-        # GitHub (Repo/Social) - 25
-        "/user", "/users/{username}", "/users/{username}/repos", "/orgs/{org}/repos", "/repos/{owner}/{repo}", 
-        "/repos/{owner}/{repo}/issues", "/repos/{owner}/{repo}/pulls", "/repos/{owner}/{repo}/commits", 
-        "/repos/{owner}/{repo}/branches", "/repos/{owner}/{repo}/releases", "/repos/{owner}/{repo}/actions/workflows", 
-        "/repos/{owner}/{repo}/actions/runs", "/search/repositories", "/search/code", "/search/users", 
-        "/emojis", "/gitignore/templates", "/licenses", "/rate_limit", "/events",
-        "/repos/{owner}/{repo}/collaborators", "/repos/{owner}/{repo}/hooks", "/repos/{owner}/{repo}/keys",
-        "/orgs/{org}/members", "/orgs/{org}/teams",
+        # Accounts & Cards (Digital Banking)
+        "/v1/accounts", "/v1/accounts/{id}", "/v1/accounts/{id}/balance", "/v1/accounts/{id}/transactions",
+        "/v1/accounts/{id}/statements", "/v1/accounts/{id}/limits", "/v1/accounts/{id}/overdraft", "/v1/accounts/types",
+        "/v1/cards", "/v1/cards/{id}", "/v1/cards/{id}/activate", "/v1/cards/{id}/freeze", "/v1/cards/{id}/unfreeze",
+        "/v1/cards/{id}/pin/reset", "/v1/cards/{id}/limits", "/v1/cards/{id}/transactions", "/v1/cards/virtual/issue",
+        "/v1/cards/physical/request", "/v1/cards/rewards", "/v1/cards/rewards/{id}", "/v1/cards/apple-pay/provision",
+        "/v1/cards/google-pay/provision", "/v1/cards/status", "/v1/cards/designs", "/v1/cards/delivery-status",
         
-        # Shopify (E-commerce) - 25
-        "/admin/api/2024-01/products.json", "/admin/api/2024-01/products/{id}.json", "/admin/api/2024-01/orders.json", 
-        "/admin/api/2024-01/orders/{id}.json", "/admin/api/2024-01/customers.json", "/admin/api/2024-01/customers/{id}.json", 
-        "/admin/api/2024-01/inventory_items.json", "/admin/api/2024-01/inventory_levels.json", "/admin/api/2024-01/locations.json", 
-        "/admin/api/2024-01/discounts.json", "/admin/api/2024-01/price_rules.json", "/admin/api/2024-01/gift_cards.json", 
-        "/admin/api/2024-01/checkouts.json", "/admin/api/2024-01/draft_orders.json", "/admin/api/2024-01/fulfillments.json", 
-        "/admin/api/2024-01/smart_collections.json", "/admin/api/2024-01/custom_collections.json", "/admin/api/2024-01/themes.json", 
-        "/admin/api/2024-01/assets.json", "/admin/api/2024-01/webhooks.json", "/admin/api/2024-01/blogs.json",
-        "/admin/api/2024-01/articles.json", "/admin/api/2024-01/pages.json", "/admin/api/2024-01/redirects.json", "/admin/api/2024-01/script_tags.json"
+        # Risk & Underwriting (Fraud Team)
+        "/v1/risk/fraud/score", "/v1/risk/fraud/score/{id}", "/v1/risk/fraud/rules", "/v1/risk/fraud/rules/{id}",
+        "/v1/risk/fraud/alerts", "/v1/risk/fraud/alerts/{id}", "/v1/risk/fraud/blocklist", "/v1/risk/fraud/blocklist/{id}",
+        "/v1/risk/aml/screen", "/v1/risk/aml/alerts", "/v1/risk/aml/cases", "/v1/risk/aml/cases/{id}",
+        "/v1/risk/credit/score", "/v1/risk/credit/score/{id}", "/v1/risk/credit/report", "/v1/risk/credit/report/{id}",
+        "/v1/risk/loans/eligibility", "/v1/risk/loans/eligibility/calculate", "/v1/risk/loans/applications", "/v1/risk/loans/applications/{id}",
+        "/v1/risk/decision-engine", "/v1/risk/decision-engine/rules", "/v1/risk/decision-engine/simulate", "/v1/risk/suspicious-activity/report",
+        "/v1/risk/compliance/check"
     ]
 
     methods = ["GET", "POST", "PUT", "DELETE", "PATCH"]
@@ -88,12 +86,12 @@ def seed_apis() -> list[API]:
         if status == APIStatus.ACTIVE:
             last_seen, dormant_days = random_last_seen(0, 7)
             has_docs = True
-            owner = random.choice(["payments-team", "risk-team", "platform-team"])
+            owner = random.choice(["Payments Team", "Identity Team", "Fraud Team", "Digital Banking", "Platform Engineering"])
             zombie_score = round(random.uniform(0.05, 0.32), 2)
         elif status == APIStatus.DEPRECATED:
             last_seen, dormant_days = random_last_seen(30, 80)
             has_docs = True
-            owner = random.choice(["legacy-team", "platform-team"])
+            owner = random.choice(["Payments Team", "Platform Engineering"])
             zombie_score = round(random.uniform(0.42, 0.68), 2)
         elif status == APIStatus.ZOMBIE:
             last_seen, dormant_days = random_last_seen(90, 120)
@@ -201,11 +199,23 @@ def main() -> None:
         "partner-gateway",
     ]
 
-    for _ in range(40):
+    # Create 80 dependencies to ensure a rich graph
+    for _ in range(80):
         target = random.choice(apis)
+        
+        # 60% chance to be an API-to-API dependency, 40% chance to be an external service
+        if random.random() > 0.4:
+            source_api = random.choice(apis)
+            # Prevent self-referential loops
+            while source_api.id == target.id:
+                source_api = random.choice(apis)
+            source_service_name = str(source_api.id)
+        else:
+            source_service_name = random.choice(services)
+            
         db.add(
             Dependency(
-                source_service=random.choice(services),
+                source_service=source_service_name,
                 source_ip=f"10.0.{random.randint(1, 20)}.{random.randint(2, 254)}",
                 target_api_id=target.id,
                 call_frequency=random.randint(20, 1200),

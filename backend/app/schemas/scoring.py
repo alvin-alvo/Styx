@@ -23,6 +23,7 @@ class APIResponse(BaseModel):
     dormant_duration_days: Optional[int] = None
     owner: Optional[str] = None
     has_documentation: bool = False
+    incoming_dependencies: int = 0
 
 
 class LifecycleScoreResponse(BaseModel):

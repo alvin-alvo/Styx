@@ -26,4 +26,7 @@ export const acknowledgeAlert = (id) => apiClient.patch(`/api/v1/alerts/${id}/ac
 export const simulateBlastRadius = (apiIds) =>
   apiClient.post('/api/v1/simulator/blast-radius', { api_ids: apiIds })
 
+export const generateAISummary = (apiData, contextType) =>
+  apiClient.post('/api/v1/ai/summary', { api_data: apiData, context_type: contextType })
+
 export default apiClient

@@ -8,12 +8,12 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 NGINX_URL = "http://localhost:8080"
 
 ENDPOINTS = [
-    {"method": "GET", "path": "/api/v1/payment", "weight": 20},
-    {"method": "POST", "path": "/api/v1/payment", "weight": 10},
-    {"method": "GET", "path": "/api/v1/user/profile", "weight": 30},
-    {"method": "POST", "path": "/api/v1/auth/login", "weight": 25},
-    {"method": "GET", "path": "/api/v1/limits", "weight": 10},
-    {"method": "GET", "path": "/internal/v1/legacy/customer-dump", "weight": 5} # The "Rogue" endpoint
+    {"method": "GET", "path": "/v1/accounts", "weight": 20},
+    {"method": "POST", "path": "/v1/payments/transfer", "weight": 10},
+    {"method": "GET", "path": "/v1/identity/customers", "weight": 30},
+    {"method": "POST", "path": "/v1/identity/auth/login", "weight": 25},
+    {"method": "GET", "path": "/v1/cards/status", "weight": 10},
+    {"method": "GET", "path": "/v1/internal/legacy/customer-dump", "weight": 5} # The "Rogue" endpoint
 ]
 
 def choose_endpoint():

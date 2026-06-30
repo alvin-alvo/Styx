@@ -78,17 +78,22 @@ def process_log_line(line, allowed_endpoints, db):
             
             # Create default security posture
             from app.models import APISecurityPosture
-            sec = APISecurityPosture(
-                api_id=api.id,
-                has_authentication=has_auth_header,
-                uses_https=False, # We don't have TLS termination in our simple nginx config
-                owasp_category="OWASP API2:2023" if not has_auth_header else "OWASP API8:2023",
-                severity="CRITICAL" if not has_auth_header else "MEDIUM",
-                security_risk_score=0.9 if not has_auth_header else 0.5,
-                last_assessed=datetime.now(timezone.utc)
-            )
-            db.add(sec)
-            db.commit()
+            try:
+                sec = APISecurityPosture(
+                    api_id=api.id,
+                    has_authentication=has_auth_header,
+                    uses_https=False, # We don't have TLS termination in our simple nginx config
+                    owasp_category="OWASP API2:2023" if not has_auth_header else "OWASP API8:2023",
+                    severity="CRITICAL" if not has_auth_header else "MEDIUM",
+                    cvss_score=9.1 if not has_auth_header else 5.9,
+                    security_risk_score=0.9 if not has_auth_header else 0.5,
+                    last_assessed=datetime.now(timezone.utc)
+                )
+                db.add(sec)
+                db.commit()
+            except Exception as e:
+                db.rollback()
+                print(f"Failed to create security posture: {e}")
             
             if current_status == APIStatus.SHADOW:
                 AlertEngine.check_shadow_discovery(api, db)

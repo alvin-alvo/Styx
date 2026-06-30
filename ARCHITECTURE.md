@@ -15,7 +15,7 @@ Styx is built as a multi-tier application designed to intercept, analyze, and vi
 3. **Backend Application (FastAPI)**
    - **Role:** Core business logic, machine learning, and data serving.
    - **Details:** Built with Python 3.13 and FastAPI, it serves REST APIs and Server-Sent Events (SSE). It handles:
-     - **ML Scoring:** Uses Scikit-learn (Isolation Forest) on 8 features (e.g., days since last call, error rate, orphan dependency ratio) to classify APIs as ACTIVE, DEPRECATED, or ZOMBIE.
+     - **Lifecycle Scoring:** Uses an explainable deterministic formula over traffic decay, documentation gap, authentication weakness, and dependency orphan status to classify APIs as ACTIVE, DEPRECATED, or ZOMBIE.
      - **Dependency Mapping:** Constructs in-memory graphs using NetworkX to calculate the blast radius of deprecating an API.
      - **Anomaly Detection:** Monitors for traffic spikes, sudden dependency changes, or new OWASP violations.
 
@@ -32,6 +32,28 @@ Styx is built as a multi-tier application designed to intercept, analyze, and vi
 6. **Traffic Simulation Environment**
    - **Role:** Generates synthetic data for the hackathon prototype.
    - **Details:** A `traffic_loop.py` script endlessly hits the Nginx gateway to simulate normal users, while `generate_attack.py` simulates malicious/rogue traffic to trigger security alerts.
+
+## Metadata-Only Data Contract
+
+Styx should be treated as a metadata intelligence layer, not a payload storage system. The ingestion path should persist only the minimum data needed to classify lifecycle risk and compute blast radius:
+
+- HTTP method, normalized path, host, status code, timestamp, and latency
+- source IP or source service identity
+- derived request counts, error-rate aggregates, and last-seen timestamps
+- dependency edges between caller/service and target API
+- security posture flags such as auth present/missing, TLS present/missing, rate limiting, and sensitive-data exposure indicators
+- alert metadata and score history
+
+Production deployments should not store raw request bodies, response bodies, authorization tokens, cookies, full customer records, account numbers, or unredacted PII. If payload inspection is ever added, it should run as a redaction/classification step before persistence.
+
+## AI and Vulnerability Intelligence Roadmap
+
+There are two separate future tracks that are easy to confuse:
+
+- **NVD integration:** Adds CVE/vulnerability intelligence to security findings. This would enrich APIs with CVE ID, CVSS score, severity, publication date, and a short description.
+- **NVIDIA/Ollama integration:** Adds an optional AI investigation assistant. NVIDIA NIM/API Catalog is a credible enterprise/cloud inference path, while Ollama is a credible local/private inference path.
+
+AI should summarize evidence, explain risk, draft remediation steps, and help owners investigate APIs. AI should not replace deterministic lifecycle scoring or invent dependency evidence.
 
 ## Future Enterprise Architecture (Planned)
 

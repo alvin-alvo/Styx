@@ -67,10 +67,10 @@ def generate_vpc_flows(count: int) -> list[dict]:
                 "bytes": random.randint(200, 250000),
                 "packets": random.randint(2, 2000),
                 "inferred_endpoint": random.choice([
-                    "/api/v2/credit-score",
-                    "/api/v1/payment",
-                    "/api/v1/transactions",
-                    "/internal/v1/legacy/customer-dump",
+                    "/v1/risk/credit/score",
+                    "/v1/payments/transfer",
+                    "/v1/accounts/{id}/transactions",
+                    "/v1/internal/legacy/customer-dump",
                 ]),
             }
         )

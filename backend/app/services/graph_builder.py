@@ -35,8 +35,10 @@ class GraphBuilder:
         # Add service->API edges
         dependencies = session.query(Dependency).all()
         for dep in dependencies:
-            graph.add_node(str(dep.source_service), type="service")
-            graph.add_edge(str(dep.source_service), str(dep.target_api_id), weight=dep.call_frequency)
+            source_id = str(dep.source_service)
+            if not graph.has_node(source_id):
+                graph.add_node(source_id, type="service")
+            graph.add_edge(source_id, str(dep.target_api_id), weight=dep.call_frequency)
 
         return graph
 
@@ -203,6 +205,45 @@ class GraphBuilder:
             severity = "LOW"
             recommendation = "✅ Safe to decommission"
 
+        # Build combined graph data for simulation
+        graph = GraphBuilder.build_dependency_graph(session)
+        connected_nodes = set(api_ids)
+        for api_id in api_ids:
+            if api_id in graph:
+                connected_nodes.update(graph.predecessors(api_id))
+                connected_nodes.update(graph.successors(api_id))
+                
+        nodes = []
+        for node_id in connected_nodes:
+            if node_id in graph.nodes:
+                node_data = graph.nodes[node_id]
+                nodes.append({
+                    "id": node_id,
+                    "type": node_data.get("type", "service"),
+                    "status": node_data.get("status")
+                })
+                
+        edges = []
+        for source, target in graph.edges():
+            if source in connected_nodes and target in connected_nodes:
+                weight = graph.edges[source, target].get("weight", 1)
+                edges.append({
+                    "source": source,
+                    "target": target,
+                    "weight": weight
+                })
+                
+        graph_data = {
+            "nodes": nodes,
+            "edges": edges,
+            "impact": {
+                "dependent_services": dependent_services,
+                "traffic_percentage": round(total_traffic, 3),
+                "impact_score": round(impact_score, 3),
+                "impact_severity": severity
+            }
+        }
+
         return {
             "dependent_services": dependent_services,
             "traffic_percentage": round(total_traffic, 3),
@@ -210,4 +251,5 @@ class GraphBuilder:
             "severity": severity,
             "affected_apis": api_ids,
             "recommendation": recommendation,
+            "graph": graph_data,
         }

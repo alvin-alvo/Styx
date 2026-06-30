@@ -117,12 +117,25 @@ To work effectively on Styx, familiarize yourself with these key domain concepts
 
 *   **Zombie APIs:** Endpoints that are unused, outdated, or deprecated but are still exposed, posing security and maintenance risks.
 *   **Blast Radius:** The scope of impact if an API is removed or fails. We use `NetworkX` in the backend and `D3.js` in the frontend to model and visualize these dependency graphs.
-*   **Deterministic Scoring:** A multi-factor scoring model that uses statistical baselines (MAD, Z-Score) to detect anomalies and score zombie APIs based on 8 telemetry features.
+*   **Deterministic Scoring:** A multi-factor scoring model that classifies lifecycle risk using traffic decay, documentation gap, authentication weakness, and dependency orphan status. The score is intentionally explainable for security and platform teams.
 *   **Log Tailing:** Currently, Styx simulates an enterprise eBPF agent by tailing Nginx access logs to generate real-time metrics and infer dependencies without code instrumentation.
+*   **Metadata-Only Telemetry:** Styx should store operational metadata and aggregates, not raw request/response payloads, tokens, secrets, account numbers, or unredacted PII.
+*   **NVD vs NVIDIA:** NVD is relevant for CVE/vulnerability enrichment. NVIDIA NIM/API Catalog is relevant as a future AI inference provider. They are separate roadmap tracks.
+*   **Ollama:** A future local/private LLM provider option for an AI investigation assistant. It should summarize evidence, not replace deterministic scoring.
+
+## 4. Current Development Priorities
+
+If you are contributing before a demo or judging session, prioritize these changes:
+
+1. Improve banking-style demo data in `backend/scripts/seed_data.py`.
+2. Improve API detail explainability in `frontend/src/components/ExplanationCard.jsx`.
+3. Improve inventory scanability with search, badges, owner, docs, and risk filters.
+4. Keep telemetry metadata-only and redact sensitive values at ingestion.
+5. Treat AI, NVD, eBPF, SSO, RBAC, and approval workflows as roadmap modules unless explicitly assigned.
 
 ---
 
-## 4. Next Steps & Recommended Reading
+## 5. Next Steps & Recommended Reading
 
 Before picking up your first ticket, we recommend reviewing the following documentation located in the root directory:
 
@@ -130,6 +143,7 @@ Before picking up your first ticket, we recommend reviewing the following docume
 2.  **`ARCHITECTURE.md`**: To understand the system design and component interactions.
 3.  **`LOGIC.md`**: Deep dive into the scoring heuristics, deterministic scoring algorithms, and anomaly detection rules.
 4.  **`WORKFLOW.md`**: To understand the expected development lifecycle.
+5.  **`ROADMAP.md`**: Repo-focused plan for product polish, metadata-only hardening, AI roadmap, and presentation readiness.
 
 ### Contributing
 
