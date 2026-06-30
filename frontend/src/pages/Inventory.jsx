@@ -1,8 +1,11 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState, useEffect } from 'react'
 import { getAPIs } from '../services/api'
 import InventoryTable from '../components/InventoryTable'
+import { PageSkeleton } from '../components/Skeleton'
 
 export default function Inventory() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [apis, setApis] = useState([])
@@ -25,14 +28,7 @@ export default function Inventory() {
   }, [])
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-ice-blue">
-          <div className="animate-spin text-3xl mb-4">⏳</div>
-          <p>Loading APIs...</p>
-        </div>
-      </div>
-    )
+    return <PageSkeleton />
   }
 
   if (error) {
@@ -47,11 +43,11 @@ export default function Inventory() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-ice-blue mb-2">API Inventory</h1>
-        <p className="text-ice-blue/70">View and manage all APIs in your infrastructure</p>
+        <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">{t("inv.title")}</h1>
+        <p className="text-zinc-600 dark:text-zinc-400">View and manage all APIs in your infrastructure</p>
       </div>
 
-      <div className="bg-light-navy/20 border border-light-navy/50 rounded-lg overflow-hidden">
+      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden">
         <InventoryTable apis={apis} />
       </div>
     </div>

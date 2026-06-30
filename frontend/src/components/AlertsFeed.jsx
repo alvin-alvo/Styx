@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react'
 import { formatDate } from '../utils/formatters'
 import AlertDetail from './AlertDetail'
@@ -45,7 +46,7 @@ export default function AlertsFeed({ alerts, onAcknowledge }) {
 
   if (alerts.length === 0) {
     return (
-      <div className="bg-light-navy/20 border border-light-navy/50 rounded-lg p-8 text-center text-ice-blue/50">
+      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-8 text-center text-zinc-600 dark:text-zinc-400">
         No alerts
       </div>
     )
@@ -64,8 +65,8 @@ export default function AlertsFeed({ alerts, onAcknowledge }) {
             <div className="flex items-start space-x-3 flex-1">
               <span className="text-2xl mt-1">{getAlertIcon(alert.alert_type)}</span>
               <div className="flex-1">
-                <h3 className="font-semibold text-ice-blue">{getAlertTitle(alert.alert_type)}</h3>
-                <p className="text-ice-blue/70 text-sm mt-1">
+                <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">{getAlertTitle(alert.alert_type)}</h3>
+                <p className="text-zinc-600 dark:text-zinc-400 text-sm mt-1">
                   API ID: <span className="font-mono">{alert.api_id.substring(0, 8)}</span>
                 </p>
                 {alert.trigger_metadata?.triggers && (
@@ -73,14 +74,14 @@ export default function AlertsFeed({ alerts, onAcknowledge }) {
                     {alert.trigger_metadata.triggers.map((trigger) => (
                       <span
                         key={trigger}
-                        className="px-2 py-1 bg-navy/50 text-ice-blue/70 text-xs rounded font-mono"
+                        className="px-2 py-1 bg-zinc-50 dark:bg-zinc-800/50 text-zinc-600 dark:text-zinc-400 text-xs rounded font-mono"
                       >
                         {trigger}
                       </span>
                     ))}
                   </div>
                 )}
-                <p className="text-ice-blue/50 text-xs mt-2">{formatDate(alert.created_at)}</p>
+                <p className="text-zinc-600 dark:text-zinc-400 text-xs mt-2">{formatDate(alert.created_at)}</p>
               </div>
             </div>
             <div className="flex items-center space-x-3 ml-4">
@@ -98,7 +99,7 @@ export default function AlertsFeed({ alerts, onAcknowledge }) {
               {!alert.acknowledged && (
                 <button
                   onClick={() => onAcknowledge(alert.id)}
-                  className="px-3 py-1 bg-light-navy hover:bg-navy rounded text-ice-blue text-sm transition"
+                  className="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-zinc-900 dark:text-zinc-100 text-sm transition"
                 >
                   Ack
                 </button>
@@ -107,11 +108,11 @@ export default function AlertsFeed({ alerts, onAcknowledge }) {
                 onClick={() =>
                   setExpandedAlertId((prev) => (prev === alert.id ? null : alert.id))
                 }
-                className="px-3 py-1 border border-light-navy/50 rounded text-ice-blue text-sm hover:bg-navy/30"
+                className="px-3 py-1 border border-zinc-200 dark:border-zinc-800 rounded text-zinc-900 dark:text-zinc-100 text-sm hover:bg-zinc-50 dark:bg-zinc-800"
               >
                 {expandedAlertId === alert.id ? 'Less' : 'More'}
               </button>
-              {alert.acknowledged && <span className="text-ice-blue/50 text-sm">✓ Acknowledged</span>}
+              {alert.acknowledged && <span className="text-zinc-600 dark:text-zinc-400 text-sm">✓ Acknowledged</span>}
             </div>
           </div>
           {expandedAlertId === alert.id && <AlertDetail alert={alert} />}

@@ -3,11 +3,11 @@
 @tailwind utilities;
 
 body {
-  @apply bg-dark-navy text-ice-blue;
+  @apply bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 transition-colors duration-300;
 }
 
 .btn-primary {
-  @apply px-4 py-2 bg-light-navy hover:bg-navy rounded text-ice-blue font-semibold transition;
+  @apply px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white font-semibold transition;
 }
 
 .status-active {

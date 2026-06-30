@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useMemo } from 'react'
 
 export default function SecurityMatrix({ apis, scores }) {
@@ -40,13 +41,13 @@ export default function SecurityMatrix({ apis, scores }) {
         ].map((item) => (
           <div key={item.label} className="flex items-center space-x-2">
             <div className="w-4 h-4 rounded" style={{ backgroundColor: item.color }}></div>
-            <span className="text-ice-blue/70">{item.label}</span>
+            <span className="text-zinc-600 dark:text-zinc-400">{item.label}</span>
           </div>
         ))}
       </div>
 
       {/* 2D Scatter Plot */}
-      <svg width="100%" height="400" viewBox="0 0 600 400" className="border border-light-navy/30 rounded">
+      <svg width="100%" height="400" viewBox="0 0 600 400" className="border border-zinc-200 dark:border-zinc-800 rounded">
         {/* Axis lines */}
         <line x1="50" y1="350" x2="550" y2="350" stroke="#CADCFC" strokeWidth="2" opacity="0.3" />
         <line x1="50" y1="350" x2="50" y2="50" stroke="#CADCFC" strokeWidth="2" opacity="0.3" />
@@ -95,21 +96,21 @@ export default function SecurityMatrix({ apis, scores }) {
 
       {/* Summary Statistics */}
       <div className="grid grid-cols-3 gap-4 mt-6">
-        <div className="bg-navy/30 border border-light-navy/30 rounded p-4">
-          <p className="text-ice-blue/70 text-sm">Critical APIs</p>
-          <p className="text-2xl font-bold text-ice-blue">
+        <div className="bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded p-4">
+          <p className="text-zinc-600 dark:text-zinc-400 text-sm">Critical APIs</p>
+          <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
             {matrixData.filter((d) => d.lifecycle > 0.6 && d.security > 0.6).length}
           </p>
         </div>
-        <div className="bg-navy/30 border border-light-navy/30 rounded p-4">
-          <p className="text-ice-blue/70 text-sm">Healthy APIs</p>
+        <div className="bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded p-4">
+          <p className="text-zinc-600 dark:text-zinc-400 text-sm">Healthy APIs</p>
           <p className="text-2xl font-bold text-green-400">
             {matrixData.filter((d) => d.lifecycle <= 0.4 && d.security <= 0.4).length}
           </p>
         </div>
-        <div className="bg-navy/30 border border-light-navy/30 rounded p-4">
-          <p className="text-ice-blue/70 text-sm">Total APIs</p>
-          <p className="text-2xl font-bold text-ice-blue">{matrixData.length}</p>
+        <div className="bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded p-4">
+          <p className="text-zinc-600 dark:text-zinc-400 text-sm">Total APIs</p>
+          <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">{matrixData.length}</p>
         </div>
       </div>
     </div>
