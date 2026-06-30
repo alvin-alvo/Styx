@@ -63,7 +63,7 @@ Response format:
                 "prompt": prompt,
                 "stream": False
             },
-            timeout=30
+            timeout=60
         )
         response.raise_for_status()
         
@@ -73,4 +73,4 @@ Response format:
             model_used=DEFAULT_MODEL
         )
     except requests.exceptions.RequestException as e:
-        raise HTTPException(status_code=503, detail=f"Failed to connect to local Ollama instance: {str(e)}")
+        raise HTTPException(status_code=503, detail=f"Failed to connect to AI instance: {str(e)}")
