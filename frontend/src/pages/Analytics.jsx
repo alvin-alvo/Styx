@@ -8,6 +8,7 @@ import api from '../services/api';
 import InfoTooltip from '../components/InfoTooltip';
 
 export default function Analytics() {
+  const { t } = useTranslation();
   const [overview, setOverview] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -133,39 +134,39 @@ export default function Analytics() {
     <div className="space-y-8">
       {/* Header */}
       <div className="bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-lg p-6 shadow-lg">
-        <h1 className="text-3xl font-bold mb-2">Executive Analytics Dashboard</h1>
-        <p className="text-zinc-600 dark:text-zinc-400">Organization-wide API risk posture and deterministic threat scoring</p>
+        <h1 className="text-3xl font-bold mb-2">{t("ana.title")}</h1>
+        <p className="text-zinc-600 dark:text-zinc-400">{t("ana.subtitle")}</p>
       </div>
 
       {/* Executive Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-zinc-50 dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-800 p-6 shadow-lg">
           <div className="flex items-center mb-2">
-            <div className="text-sm font-medium text-zinc-600 dark:text-zinc-400">Total Managed APIs</div>
-            <InfoTooltip text="The total number of active API endpoints managed and monitored across your infrastructure." />
+            <div className="text-sm font-medium text-zinc-600 dark:text-zinc-400">{t("ana.kpi.managed")}</div>
+            <InfoTooltip text={t("ana.kpi.managed.info")} />
           </div>
           <div className="text-4xl font-bold text-zinc-900 dark:text-zinc-100">{totalAPIs}</div>
         </div>
         <div className="bg-zinc-50 dark:bg-zinc-800 rounded-lg border border-rose-500/30 p-6 shadow-lg">
           <div className="flex items-center mb-2">
-            <div className="text-sm font-medium text-rose-300/80">Zombie APIs</div>
-            <InfoTooltip text="Endpoints that are still receiving traffic but lack proper ownership, documentation, or maintenance." />
+            <div className="text-sm font-medium text-rose-300/80">{t("ana.kpi.zombies")}</div>
+            <InfoTooltip text={t("ana.kpi.zombies.info")} />
           </div>
           <div className="text-4xl font-bold text-rose-400">{zombieCount}</div>
-          <div className="text-xs text-rose-300/60 mt-2">Abandoned / undocumented</div>
+          <div className="text-xs text-rose-300/60 mt-2">{t("ana.kpi.zombies.desc")}</div>
         </div>
         <div className="bg-zinc-50 dark:bg-zinc-800 rounded-lg border border-purple-500/30 p-6 shadow-lg">
           <div className="flex items-center mb-2">
-            <div className="text-sm font-medium text-purple-300/80">Shadow APIs</div>
-            <InfoTooltip text="APIs deployed outside of official development channels and standard security governance." />
+            <div className="text-sm font-medium text-purple-300/80">{t("ana.kpi.shadow")}</div>
+            <InfoTooltip text={t("ana.kpi.shadow.info")} />
           </div>
           <div className="text-4xl font-bold text-purple-400">{shadowCount}</div>
-          <div className="text-xs text-purple-300/60 mt-2">Undocumented but active</div>
+          <div className="text-xs text-purple-300/60 mt-2">{t("ana.kpi.shadow.desc")}</div>
         </div>
         <div className="bg-zinc-50 dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-800 p-6 shadow-lg">
           <div className="flex items-center mb-2">
-            <div className="text-sm font-medium text-zinc-600 dark:text-zinc-400">Critical Risk Assets</div>
-            <InfoTooltip text="APIs with a combined risk score exceeding 70%, requiring immediate remediation." />
+            <div className="text-sm font-medium text-zinc-600 dark:text-zinc-400">{t("ana.kpi.critical")}</div>
+            <InfoTooltip text={t("ana.kpi.critical.info")} />
           </div>
           <div className="text-4xl font-bold text-amber-400">{top_at_risk.critical_count}</div>
           <div className="text-xs text-amber-300/60 mt-2">&gt;70% combined risk score</div>
@@ -178,7 +179,7 @@ export default function Analytics() {
           <div>
             <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
               {getChartTitle()}
-              <InfoTooltip text="Visualizes the historical trend of API lifecycle states, allowing you to correlate security posture with infrastructure changes." />
+              <InfoTooltip text={t("ana.chart.info")} />
               {timeFilter === 'live' && (
                 <span className="relative flex h-2 w-2 ml-1">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
@@ -186,7 +187,7 @@ export default function Analytics() {
                 </span>
               )}
             </h2>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Historical tracking of API abandonment vs active endpoints</p>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">{t("ana.chart.desc")}</p>
             <div className="flex items-center space-x-1 bg-zinc-200 dark:bg-zinc-900 p-1 rounded-lg mt-4 inline-flex">
               {['day', 'week', '30d', 'live'].map((filter) => (
                 <button
@@ -204,8 +205,8 @@ export default function Analytics() {
             </div>
           </div>
           <div className="text-right mt-4 sm:mt-0">
-             <div className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">{dynamicTrendStats.count} Zombies</div>
-             <div className="text-sm text-zinc-600 dark:text-zinc-400">Trend: <span className={dynamicTrendStats.trend === 'increasing' ? 'text-rose-400' : dynamicTrendStats.trend === 'decreasing' ? 'text-emerald-400' : 'text-zinc-400'}>{dynamicTrendStats.trend.toUpperCase()}</span></div>
+             <div className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">{dynamicTrendStats.count} {t("ana.zombies")}</div>
+             <div className="text-sm text-zinc-600 dark:text-zinc-400">{t("ana.chart.trend")} <span className={dynamicTrendStats.trend === 'increasing' ? 'text-rose-400' : dynamicTrendStats.trend === 'decreasing' ? 'text-emerald-400' : 'text-zinc-400'}>{dynamicTrendStats.trend.toUpperCase()}</span></div>
           </div>
         </div>
         <div className="bg-white/50 dark:bg-zinc-900/50 rounded-lg p-4 border border-zinc-200 dark:border-zinc-800">
@@ -232,14 +233,14 @@ export default function Analytics() {
         {/* Top At-Risk APIs */}
         <div className="bg-zinc-50 dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-800 p-6 shadow-lg">
           <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-6 flex items-center">
-            Top {top_at_risk.top_apis.length} Highest Risk APIs
-            <InfoTooltip text="A prioritized list of endpoints with the highest combined lifecycle and security risk scores." />
+            {t("ana.top.title", { count: top_at_risk.top_apis.length })}
+            <InfoTooltip text={t("ana.top.info")} />
           </h2>
           <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
             {top_at_risk.top_apis.map((api, idx) => (
               <div key={api.api_id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-lg hover:border-zinc-200 dark:border-zinc-800 transition">
-                <div className="flex-1 mb-3 sm:mb-0">
-                  <div className="flex items-center gap-3">
+                <div className="flex-1 mb-3 sm:mb-0 min-w-0">
+                  <div className="flex items-center gap-3 min-w-0">
                     <span className="bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs font-bold rounded-full w-7 h-7 flex items-center justify-center shrink-0">
                       #{idx + 1}
                     </span>
@@ -248,10 +249,10 @@ export default function Analytics() {
                     </span>
                   </div>
                   <div className="text-xs text-zinc-600 dark:text-zinc-400 mt-2 pl-10">
-                    Lifecycle Risk: {(api.zombie_score * 100).toFixed(0)}% | Security Findings: {(api.security_risk * 100).toFixed(0)}%
+                    {t("ana.top.risk_label")}: {(api.zombie_score * 100).toFixed(0)}% | {t("ana.top.sec_label")}: {(api.security_risk * 100).toFixed(0)}%
                   </div>
                 </div>
-                <div className="sm:text-right pl-10 sm:pl-0">
+                <div className="sm:text-right pl-10 sm:pl-4 shrink-0">
                   <div className={`text-2xl font-bold ${api.combined_risk > 0.7 ? 'text-rose-400' : api.combined_risk > 0.5 ? 'text-amber-400' : 'text-emerald-400'}`}>
                     {(api.combined_risk * 100).toFixed(0)}%
                   </div>

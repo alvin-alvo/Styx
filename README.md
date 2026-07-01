@@ -13,6 +13,10 @@ Styx is a hackathon prototype that enables organizations to identify zombie APIs
 - **Mathematical Risk Scoring:** Calculates real-time risk scores using deterministic Modified Z-Score and MAD anomaly detection.
 - **Lifecycle Transitions:** Simulates the decommissioning process to prevent cascading failures in production.
 - **Styx AI Assistant:** A globally integrated, context-aware chatbot powered by local LLMs (Ollama + `llama3`). It has real-time access to database telemetry to act as your Senior Security Architect.
+- **Enterprise Frosted Glass UI:** A responsive, visually stunning Zinc+Blue aesthetic utilizing Glassmorphism, animated gradient blush backgrounds, SVG noise texturing, and Lucide icons.
+- **Multi-User TOTP Authentication (Zero-Backend Demo):** A highly interactive, localized 2FA flow built with `otplib` and `localStorage`.
+  - **User Flow:** Users can dynamically **Sign Up** via the login portal -> **Setup 2FA** by scanning a live QR Code (`otpauth://`) with their Google Authenticator app -> **Verify 2FA** using the rolling 6-digit code to access the secure dashboard.
+- **Comprehensive Internationalization (i18n):** Real-time, zero-reload translation across the entire platform in 6 languages (English, Hindi, Tamil, Telugu, Malayalam, Marathi).
 
 ## Live Demo
 
@@ -150,6 +154,9 @@ Styx/
 ├── frontend/
 │   ├── src/
 │   │   ├── pages/
+│   │   │   ├── Landing.jsx             # Public Marketing Homepage
+│   │   │   ├── Contact.jsx             # Z Row Team Profiles
+│   │   │   ├── Login.jsx               # Auth Portal
 │   │   │   ├── Inventory.jsx           # API list view (sortable, filterable)
 │   │   │   ├── APIDetail.jsx           # Single API drill-down
 │   │   │   ├── Security.jsx            # 2D risk matrix
@@ -158,6 +165,8 @@ Styx/
 │   │   │   ├── Alerts.jsx              # Real-time alert feed
 │   │   │   └── Analytics.jsx           # Analytics dashboards: trends, heatmaps, top-at-risk
 │   │   ├── components/                 # React UI components
+│   │   │   ├── PublicNavbar.jsx        # Sticky header for public routes
+│   │   │   ├── PublicFooter.jsx        # UBI-themed footer
 │   │   │   ├── ChatbotWidget.jsx       # Global Styx AI Assistant UI
 │   │   │   └── EbpfControls.jsx        # eBPF Interactive Topbar Widget
 │   │   ├── services/api.js             # Axios HTTP client
@@ -234,12 +243,14 @@ Note: Results rely on simulated mock traffic. A true production deployment would
 - Analytics dashboard (30-day trends, heatmaps, top-at-risk APIs)
 - Population statistics calculation & monitoring (synthetic)
 
-**Phase 2.2 (True eBPF & AI Intelligence)** ✅ Complete (July 1, 2026)
+**Phase 2.2 (True eBPF, AI Intelligence, & Enterprise UI)** ✅ Complete (July 1, 2026)
 
 - Added Styx AI Assistant (Ollama `llama3`) globally available to explain risk scores and answer inventory questions based on real-time DB context.
 - Implemented eBPF Replay Engine to flawlessly simulate Linux kernel network capture ingestion natively on macOS.
 - Built interactive eBPF TopNav Controls to modify telemetry speeds dynamically.
 - Hardened Authentication pipeline.
+- Overhauled UI with an Enterprise "Frosted Glass" aesthetic (Zinc+Cobalt Blue), Lucide-react iconography, and responsive flex-box navigation.
+- Implemented Global Internationalization (i18n) supporting zero-reload translation across English, Hindi, Tamil, Telugu, Malayalam, and Marathi.
 
 **Phase 2.3 (API Lifecycle Management)** ⏳ Planned
 

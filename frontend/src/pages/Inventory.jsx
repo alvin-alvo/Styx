@@ -46,7 +46,7 @@ export default function Inventory() {
       <div className="shrink-0">
         <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-2 flex items-center">
           {t("inv.title")}
-          <InfoTooltip text="A comprehensive registry of all discovered API endpoints across your enterprise environments." />
+          <InfoTooltip text={t("inv.info")} />
         </h1>
         <p className="text-zinc-600 dark:text-zinc-400">View and manage all APIs in your infrastructure</p>
       </div>

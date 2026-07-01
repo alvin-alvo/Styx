@@ -45,9 +45,9 @@ export default function Simulator() {
       <div>
         <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-2 flex items-center">
           {t("sim.title")}
-          <InfoTooltip text="Interactive sandbox to predict and visualize the impact of decommissioning APIs on dependent systems." />
+          <InfoTooltip text={t("sim.info")} />
         </h1>
-        <p className="text-zinc-600 dark:text-zinc-400">Simulate the impact of decommissioning APIs</p>
+        <p className="text-zinc-600 dark:text-zinc-400">{t("sim.subtitle")}</p>
       </div>
 
       <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden">

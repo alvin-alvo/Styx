@@ -66,9 +66,9 @@ export default function Graph() {
       <div>
         <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-2 flex items-center">
           {t("graph.title")}
-          <InfoTooltip text="Interactive node graph displaying service-to-service communication paths and endpoint dependencies." />
+          <InfoTooltip text={t("graph.info")} />
         </h1>
-        <p className="text-zinc-600 dark:text-zinc-400">Visualize API service dependencies</p>
+        <p className="text-zinc-600 dark:text-zinc-400">{t("graph.subtitle")}</p>
       </div>
 
       <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-4">

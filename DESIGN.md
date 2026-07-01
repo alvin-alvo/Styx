@@ -1,7 +1,7 @@
 # Styx Enterprise Design System (Phase 2.0)
 
 ## 1. Design Philosophy
-- **Aesthetic:** Enterprise SaaS Modernism. Clean, trustworthy, fast, and accessible.
+- **Aesthetic:** Enterprise SaaS Modernism. Clean, trustworthy, fast, accessible, and features extensive "Frosted Glass" (Glassmorphism) elements for a premium, dynamic feel.
 - **Vibe:** Looks like a mature Series-B cybersecurity product.
 - **Constraints:** ZERO emojis. Use strictly `lucide-react` for all iconography. No heavy, blocky shadows; use subtle borders and soft diffusion shadows. Zero lag on transitions.
 
@@ -9,9 +9,8 @@
 To achieve the new UX requirements, ensure these packages are installed:
 - `framer-motion`: For smooth page transitions and micro-interactions.
 - `react-hotkeys-hook`: For global keyboard shortcuts.
-- `react-i18next` & `i18next`: For lightweight multi-language support (English, indian languages).
+- `react-i18next` & `i18next`: For comprehensive internationalization (i18n) across 6 languages (English, Hindi, Tamil, Telugu, Malayalam, Marathi).
 - `clsx` & `tailwind-merge`: For dynamic class compilation.
-`
 ## 3. Color Palette (Tailwind)
 - **Backgrounds:** - Light Mode: `bg-zinc-50` (App), `bg-white` (Cards).
   - Dark Mode: `bg-zinc-950` (App), `bg-zinc-900` (Cards).
@@ -31,8 +30,8 @@ To achieve the new UX requirements, ensure these packages are installed:
 
 ## 5. Structural Layout (App Shell)
 - **Top Navbar:** - Left: Breadcrumb navigation.
-  - Center: Global Search Bar (`cmd+k` / `ctrl+k` trigger).
-  - Right: Live Telemetry Status (Pulsing emerald dot with "Live" text), Language Switcher dropdown, Theme Toggle (Sun/Moon), User Profile / Logout.
+  - Center: Global Search Bar (`cmd+k` / `ctrl+k` trigger, flexible layout to prevent occlusion).
+  - Right: eBPF Interactive Controls, Live Telemetry Status, Language Switcher dropdown (6 languages supported), Theme Toggle (Sun/Moon), User Profile / Logout.
 - **Sidebar (Left):**
   - Brand Logo (Styx).
   - Main Navigation links with active states (bg-blue-50/10).
@@ -40,11 +39,18 @@ To achieve the new UX requirements, ensure these packages are installed:
 - **Main Content:** Padded area (`p-6` or `p-8`) housing the dynamic route content.
 
 ## 6. Page Specifications
-- **Landing Page (Public):** Modern hero section, abstract data graphic, value propositions, and a primary CTA "Enter Platform" leading to Login.
-- **Login (Auth):** Centered, elegant card. Hardcoded admin/admin validation. Redirects to Dashboard on success.
-- **Global Dashboard (New):** - Top Row: 4 KPI Cards (Total APIs, Active Zombies, Avg Risk Score, Open Alerts). Include mini sparklines (Recharts) in the cards.
+- **Landing Page (Public):** 
+  - Overhauled with `framer-motion` scroll reveals and a dynamic, animated blush gradient background (SVG noise + blended orbs).
+  - Structure: Hero Section ("Secure the Core"), 3 Alternating Feature Blocks with `#00579C` blue pills and actual application screenshots (`inventory.png`, `blast_radius.png`), a 3x2 Core Intelligence Engine feature grid, and a Final `#DA251C` CTA card.
+- **Contact Page (Public):**
+  - Displays the "Z Row" team.
+  - Team members (Hrisheekesh PV, Alvin Binoy, Karthik, Bhavitha Jayaprakash) displayed in a 2x2 responsive grid with customized Lucide role icons (Search, Code, Database, Layout).
+- **Login & Auth Gateway:** Centered, elegant gateway seamlessly toggling between Sign Up and Login. Fully functional zero-backend multi-user implementation using `localStorage` and `otplib`, enforcing unique user profiles and dedicated TOTP 2FA secrets per user. Redirects to secure Dashboard on success.
+- **Global Dashboard (New):** 
+  - Top Row: 4 KPI Cards (Total APIs, Active Zombies, Avg Risk Score, Open Alerts). Include mini sparklines (Recharts) in the cards.
   - Middle Row: Main Activity Chart (Line/Area) & Status Donut Chart.
-- **Simulator (Blast Radius):** - D3.js Graph update: When a node is selected to be "decommissioned," all dependent edges must transition to `stroke-dasharray="5,5"` (dotted) and turn Crimson red, visually demonstrating the blast radius.
+- **Simulator (Blast Radius):** 
+  - D3.js Graph update: When a node is selected to be "decommissioned," all dependent edges must transition to `stroke-dasharray="5,5"` (dotted) and turn Crimson red, visually demonstrating the blast radius.
 - **Data Lists:** All tables/lists must include a filter bar above them (Search by name, Filter by Status dropdown, Sort by Risk).
 
 ## 7. UX & Animations

@@ -104,7 +104,7 @@ export default function Alerts() {
       <div className="shrink-0">
         <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-2 flex items-center">
           {t("alerts.title")}
-          <InfoTooltip text="Live feed of system security events, vulnerabilities, and operational alerts requiring team attention." />
+          <InfoTooltip text={t("alerts.info")} />
         </h1>
         <p className="text-zinc-600 dark:text-zinc-400">{t("alerts.subtitle")}</p>
       </div>
