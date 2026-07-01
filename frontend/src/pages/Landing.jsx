@@ -94,8 +94,60 @@ export default function Landing() {
               transition={{ duration: 0.7, ease: "easeOut" }}
               className="w-full md:w-1/2"
             >
-              <div className="aspect-[4/3] bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl flex items-center justify-center p-8">
-                <Bot className="w-32 h-32 text-zinc-300 dark:text-zinc-700" />
+              <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden w-full h-[450px]">
+                {/* Header */}
+                <div className="flex items-center justify-between p-4 border-b border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                      <Bot size={20} />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-sm text-zinc-900 dark:text-white">Styx AI Assistant</h4>
+                      <p className="text-xs text-zinc-500">Powered by llama3</p>
+                    </div>
+                  </div>
+                  <div className="text-zinc-400 cursor-not-allowed">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </div>
+                </div>
+                {/* Chat Area */}
+                <div className="flex-1 p-4 space-y-4 overflow-hidden flex flex-col justify-end bg-zinc-50/50 dark:bg-zinc-900/50 relative">
+                  
+                  {/* AI Message */}
+                  <div className="flex justify-start">
+                    <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl rounded-tl-sm px-4 py-3 max-w-[85%] text-sm text-zinc-800 dark:text-zinc-200 shadow-sm">
+                      Hello! I am Styx-AI. How can I assist you with your API ecosystem today?
+                    </div>
+                  </div>
+
+                  {/* User Message */}
+                  <div className="flex justify-end">
+                    <div className="bg-blue-600 text-white rounded-2xl rounded-tr-sm px-4 py-3 max-w-[85%] text-sm shadow-sm">
+                      what is the blast radius if we kill the b1/payments endpoint?
+                    </div>
+                  </div>
+
+                  {/* AI Message (Long) */}
+                  <div className="flex justify-start relative z-10">
+                    <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl rounded-tl-sm px-4 py-3 max-w-[95%] text-sm text-zinc-800 dark:text-zinc-200 shadow-sm leading-relaxed">
+                      A very specific question!<br/>
+                      According to my real-time system state, the /b1/payments endpoint is currently marked as &lt;APIStatus.ACTIVE: 'ACTIVE'&gt;. If we were to "kill" this endpoint, I would estimate the blast radius to be moderate. Here's a breakdown of the potential impact:<br/>
+                      Directly affected APIs:
+                    </div>
+                  </div>
+
+                  {/* Fade out at bottom for partial visibility */}
+                  <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-zinc-50/50 dark:from-zinc-900/50 to-transparent z-20 pointer-events-none"></div>
+                </div>
+                {/* Input Bar */}
+                <div className="p-4 border-t border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 relative z-30">
+                  <div className="relative">
+                    <input type="text" disabled placeholder="Ask about your APIs..." className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-full pl-4 pr-12 py-2.5 text-sm text-zinc-400 focus:outline-none cursor-not-allowed" />
+                    <button className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center text-zinc-500 dark:text-zinc-400 cursor-not-allowed">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    </button>
+                  </div>
+                </div>
               </div>
             </motion.div>
             <motion.div 
