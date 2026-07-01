@@ -152,6 +152,9 @@ Styx/
 ├── frontend/
 │   ├── src/
 │   │   ├── pages/
+│   │   │   ├── Landing.jsx             # Public Marketing Homepage
+│   │   │   ├── Contact.jsx             # Z Row Team Profiles
+│   │   │   ├── Login.jsx               # Auth Portal
 │   │   │   ├── Inventory.jsx           # API list view (sortable, filterable)
 │   │   │   ├── APIDetail.jsx           # Single API drill-down
 │   │   │   ├── Security.jsx            # 2D risk matrix
@@ -160,6 +163,8 @@ Styx/
 │   │   │   ├── Alerts.jsx              # Real-time alert feed
 │   │   │   └── Analytics.jsx           # Analytics dashboards: trends, heatmaps, top-at-risk
 │   │   ├── components/                 # React UI components
+│   │   │   ├── PublicNavbar.jsx        # Sticky header for public routes
+│   │   │   ├── PublicFooter.jsx        # UBI-themed footer
 │   │   │   ├── ChatbotWidget.jsx       # Global Styx AI Assistant UI
 │   │   │   └── EbpfControls.jsx        # eBPF Interactive Topbar Widget
 │   │   ├── services/api.js             # Axios HTTP client

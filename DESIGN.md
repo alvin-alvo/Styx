@@ -39,11 +39,18 @@ To achieve the new UX requirements, ensure these packages are installed:
 - **Main Content:** Padded area (`p-6` or `p-8`) housing the dynamic route content.
 
 ## 6. Page Specifications
-- **Landing Page (Public):** Modern hero section, abstract data graphic, value propositions, and a primary CTA "Enter Platform" leading to Login.
+- **Landing Page (Public):** 
+  - Overhauled with `framer-motion` scroll reveals.
+  - Structure: Hero Section ("Secure the Core"), 3 Alternating Feature Blocks with `#00579C` blue pills and mock application screenshots, a 3x2 Core Intelligence Engine feature grid, and a Final `#DA251C` CTA card.
+- **Contact Page (Public):**
+  - Displays the "Z Row" team.
+  - Team members (Hrisheekesh PV, Alvin Binoy, Karthik, Bhavitha Jayaprakash) displayed in a 2x2 responsive grid with customized Lucide role icons (Search, Code, Database, Layout).
 - **Login (Auth):** Centered, elegant card. Hardcoded admin/admin validation. Redirects to Dashboard on success.
-- **Global Dashboard (New):** - Top Row: 4 KPI Cards (Total APIs, Active Zombies, Avg Risk Score, Open Alerts). Include mini sparklines (Recharts) in the cards.
+- **Global Dashboard (New):** 
+  - Top Row: 4 KPI Cards (Total APIs, Active Zombies, Avg Risk Score, Open Alerts). Include mini sparklines (Recharts) in the cards.
   - Middle Row: Main Activity Chart (Line/Area) & Status Donut Chart.
-- **Simulator (Blast Radius):** - D3.js Graph update: When a node is selected to be "decommissioned," all dependent edges must transition to `stroke-dasharray="5,5"` (dotted) and turn Crimson red, visually demonstrating the blast radius.
+- **Simulator (Blast Radius):** 
+  - D3.js Graph update: When a node is selected to be "decommissioned," all dependent edges must transition to `stroke-dasharray="5,5"` (dotted) and turn Crimson red, visually demonstrating the blast radius.
 - **Data Lists:** All tables/lists must include a filter bar above them (Search by name, Filter by Status dropdown, Sort by Risk).
 
 ## 7. UX & Animations
