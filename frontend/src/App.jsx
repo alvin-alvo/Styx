@@ -6,6 +6,8 @@ import Layout from './components/Layout'
 import Landing from './pages/Landing'
 import Contact from './pages/Contact'
 import Login from './pages/Login'
+import Setup2FA from './pages/Setup2FA'
+import Verify2FA from './pages/Verify2FA'
 import Inventory from './pages/Inventory'
 import APIDetail from './pages/APIDetail'
 import Security from './pages/Security'
@@ -30,6 +32,8 @@ export default function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/setup-2fa" element={<Setup2FA />} />
+        <Route path="/verify-2fa" element={<Verify2FA />} />
         <Route 
           path="/dashboard" 
           element={

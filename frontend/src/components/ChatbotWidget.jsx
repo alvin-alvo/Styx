@@ -134,7 +134,7 @@ export default function ChatbotWidget() {
           onClick={() => setIsOpen(true)}
           className="w-14 h-14 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-full shadow-[0_0_20px_rgba(37,99,235,0.4)] dark:shadow-[0_0_20px_rgba(59,130,246,0.5)] flex items-center justify-center hover:scale-105 hover:shadow-[0_0_25px_rgba(37,99,235,0.6)] dark:hover:shadow-[0_0_25px_rgba(59,130,246,0.7)] transition-all duration-300 focus:outline-none border border-zinc-800 dark:border-zinc-200 group"
         >
-          <MessageSquarePlus className="w-6 h-6 text-white dark:text-zinc-900 group-hover:text-blue-400 dark:group-hover:text-blue-600 transition-colors" />
+          <Bot className="w-6 h-6 text-white dark:text-zinc-900 group-hover:text-blue-400 dark:group-hover:text-blue-600 transition-colors" />
         </button>
       )}
     </div>

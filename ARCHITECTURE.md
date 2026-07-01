@@ -27,6 +27,7 @@ Styx is built as a multi-tier application designed to intercept, analyze, and vi
 5. **Frontend Application (React + Vite)**
    - **Role:** User interface and visualization.
    - **Details:** A React 18 application built with Vite and styled using Tailwind CSS. It features a Frosted Glass (Glassmorphism) aesthetic and comprehensive Internationalization (i18n) across 6 languages (English, Hindi, Tamil, Telugu, Malayalam, Marathi). Key architectural components include:
+     - **Multi-User Authentication Layer:** Zero-backend interactive 2FA gateway using `localStorage` as a mock user database and `otplib` to enforce deterministic, frontend-only TOTP verification.
      - **Public Pages (`Landing.jsx`, `Contact.jsx`):** Features `framer-motion` reveal animations, a fixed `PublicNavbar` with secure routing, and a display of the Z Row team. The Chatbot is strictly hidden on these routes.
      - **D3.js:** For rendering interactive, force-directed dependency graphs.
      - **Global Chatbot UI:** Translucent Styx AI widget on all authenticated screens with Lucide-react iconography.

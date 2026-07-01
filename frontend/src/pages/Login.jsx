@@ -8,13 +8,14 @@ import { useAppContext } from '../context/AppContext';
 export default function Login() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { login, theme, toggleTheme } = useAppContext();
+  const { login, signup, theme, toggleTheme } = useAppContext();
   
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -23,12 +24,15 @@ export default function Login() {
     
     // Simulate network delay for premium feel
     setTimeout(() => {
-      const success = login(username, password);
-      if (success) {
-        navigate('/dashboard');
-      } else {
-        setError(t('login.error'));
+      const response = isLogin ? login(username, password) : signup(username, password);
+      
+      if (response.error) {
+        setError(response.error);
         setIsLoading(false);
+      } else if (response.status === 'setup') {
+        navigate('/setup-2fa');
+      } else if (response.status === 'verify') {
+        navigate('/verify-2fa');
       }
     }, 800);
   };
@@ -65,10 +69,10 @@ export default function Login() {
             
             <div className="text-center mb-8">
               <h2 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-white">
-                {t('login.title')}
+                {isLogin ? t('login.title') : 'Create Account'}
               </h2>
               <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-2">
-                {t('login.subtitle')}
+                {isLogin ? t('login.subtitle') : 'Register for the Styx Enterprise Platform'}
               </p>
             </div>
 
@@ -136,10 +140,21 @@ export default function Login() {
                 {isLoading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
                 ) : (
-                  t('login.button')
+                  isLogin ? t('login.button') : 'Sign Up'
                 )}
               </button>
             </form>
+
+            <div className="mt-6 text-center text-sm text-zinc-600 dark:text-zinc-400">
+              {isLogin ? "Don't have an account? " : "Already have an account? "}
+              <button 
+                type="button" 
+                onClick={() => setIsLogin(!isLogin)} 
+                className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+              >
+                {isLogin ? "Sign Up" : "Sign In"}
+              </button>
+            </div>
           </div>
           
           <div className="bg-zinc-50 dark:bg-zinc-950/50 px-8 py-4 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between">

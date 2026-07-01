@@ -13,7 +13,9 @@ Styx is a hackathon prototype that enables organizations to identify zombie APIs
 - **Mathematical Risk Scoring:** Calculates real-time risk scores using deterministic Modified Z-Score and MAD anomaly detection.
 - **Lifecycle Transitions:** Simulates the decommissioning process to prevent cascading failures in production.
 - **Styx AI Assistant:** A globally integrated, context-aware chatbot powered by local LLMs (Ollama + `llama3`). It has real-time access to database telemetry to act as your Senior Security Architect.
-- **Enterprise Frosted Glass UI:** A responsive, visually stunning Zinc+Blue aesthetic utilizing Glassmorphism and Lucide icons.
+- **Enterprise Frosted Glass UI:** A responsive, visually stunning Zinc+Blue aesthetic utilizing Glassmorphism, animated gradient blush backgrounds, SVG noise texturing, and Lucide icons.
+- **Multi-User TOTP Authentication (Zero-Backend Demo):** A highly interactive, localized 2FA flow built with `otplib` and `localStorage`.
+  - **User Flow:** Users can dynamically **Sign Up** via the login portal -> **Setup 2FA** by scanning a live QR Code (`otpauth://`) with their Google Authenticator app -> **Verify 2FA** using the rolling 6-digit code to access the secure dashboard.
 - **Comprehensive Internationalization (i18n):** Real-time, zero-reload translation across the entire platform in 6 languages (English, Hindi, Tamil, Telugu, Malayalam, Marathi).
 
 ## Live Demo

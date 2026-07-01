@@ -40,12 +40,12 @@ To achieve the new UX requirements, ensure these packages are installed:
 
 ## 6. Page Specifications
 - **Landing Page (Public):** 
-  - Overhauled with `framer-motion` scroll reveals.
-  - Structure: Hero Section ("Secure the Core"), 3 Alternating Feature Blocks with `#00579C` blue pills and mock application screenshots, a 3x2 Core Intelligence Engine feature grid, and a Final `#DA251C` CTA card.
+  - Overhauled with `framer-motion` scroll reveals and a dynamic, animated blush gradient background (SVG noise + blended orbs).
+  - Structure: Hero Section ("Secure the Core"), 3 Alternating Feature Blocks with `#00579C` blue pills and actual application screenshots (`inventory.png`, `blast_radius.png`), a 3x2 Core Intelligence Engine feature grid, and a Final `#DA251C` CTA card.
 - **Contact Page (Public):**
   - Displays the "Z Row" team.
   - Team members (Hrisheekesh PV, Alvin Binoy, Karthik, Bhavitha Jayaprakash) displayed in a 2x2 responsive grid with customized Lucide role icons (Search, Code, Database, Layout).
-- **Login (Auth):** Centered, elegant card. Hardcoded admin/admin validation. Redirects to Dashboard on success.
+- **Login & Auth Gateway:** Centered, elegant gateway seamlessly toggling between Sign Up and Login. Fully functional zero-backend multi-user implementation using `localStorage` and `otplib`, enforcing unique user profiles and dedicated TOTP 2FA secrets per user. Redirects to secure Dashboard on success.
 - **Global Dashboard (New):** 
   - Top Row: 4 KPI Cards (Total APIs, Active Zombies, Avg Risk Score, Open Alerts). Include mini sparklines (Recharts) in the cards.
   - Middle Row: Main Activity Chart (Line/Area) & Status Donut Chart.
