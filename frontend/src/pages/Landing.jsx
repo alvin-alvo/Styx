@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { 
@@ -9,6 +10,8 @@ import PublicNavbar from '../components/PublicNavbar';
 import PublicFooter from '../components/PublicFooter';
 
 export default function Landing() {
+  const { t } = useTranslation();
+  
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col font-sans transition-colors duration-300 relative">
       
@@ -66,18 +69,18 @@ export default function Landing() {
             transition={{ duration: 0.6 }}
           >
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-zinc-900 dark:text-white mb-6">
-              Secure the Core.<br/>
-              Decommission with Confidence.
+              {t('landing.hero.t1')}<br/>
+              {t('landing.hero.t2')}
             </h1>
             <p className="text-lg text-zinc-500 dark:text-zinc-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-              The API lifecycle intelligence platform that empowers financial institutions to safely eliminate risky legacy endpoints without breaking critical dependent systems.
+              {t('landing.hero.sub')}
             </p>
             <Link 
               to="/login"
               className="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white rounded-lg hover:scale-105 transition-transform shadow-lg shadow-red-500/20"
               style={{ backgroundColor: '#DA251C' }}
             >
-              Try Now
+              {t('landing.try_now')}
             </Link>
           </motion.div>
         </section>
@@ -102,8 +105,8 @@ export default function Landing() {
                       <Bot size={20} />
                     </div>
                     <div>
-                      <h4 className="font-bold text-sm text-zinc-900 dark:text-white">Styx AI Assistant</h4>
-                      <p className="text-xs text-zinc-500">Powered by llama3</p>
+                      <h4 className="font-bold text-sm text-zinc-900 dark:text-white">{t('landing.alt1.pill')}</h4>
+                      <p className="text-xs text-zinc-500">{t('chat.sub')}</p>
                     </div>
                   </div>
                   <div className="text-zinc-400 cursor-not-allowed">
@@ -116,23 +119,21 @@ export default function Landing() {
                   {/* AI Message */}
                   <div className="flex justify-start">
                     <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl rounded-tl-sm px-4 py-3 max-w-[85%] text-sm text-zinc-800 dark:text-zinc-200 shadow-sm">
-                      Hello! I am Styx-AI. How can I assist you with your API ecosystem today?
+                      {t('landing.mock.chat.ai1')}
                     </div>
                   </div>
 
                   {/* User Message */}
                   <div className="flex justify-end">
                     <div className="bg-blue-600 text-white rounded-2xl rounded-tr-sm px-4 py-3 max-w-[85%] text-sm shadow-sm">
-                      what is the blast radius if we kill the b1/payments endpoint?
+                      {t('landing.mock.chat.user1')}
                     </div>
                   </div>
 
                   {/* AI Message (Long) */}
                   <div className="flex justify-start relative z-10">
-                    <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl rounded-tl-sm px-4 py-3 max-w-[95%] text-sm text-zinc-800 dark:text-zinc-200 shadow-sm leading-relaxed">
-                      A very specific question!<br/>
-                      According to my real-time system state, the /b1/payments endpoint is currently marked as &lt;APIStatus.ACTIVE: 'ACTIVE'&gt;. If we were to "kill" this endpoint, I would estimate the blast radius to be moderate. Here's a breakdown of the potential impact:<br/>
-                      Directly affected APIs:
+                    <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl rounded-tl-sm px-4 py-3 max-w-[95%] text-sm text-zinc-800 dark:text-zinc-200 shadow-sm leading-relaxed whitespace-pre-line">
+                      {t('landing.mock.chat.ai2')}
                     </div>
                   </div>
 
@@ -142,7 +143,7 @@ export default function Landing() {
                 {/* Input Bar */}
                 <div className="p-4 border-t border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 relative z-30">
                   <div className="relative">
-                    <input type="text" disabled placeholder="Ask about your APIs..." className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-full pl-4 pr-12 py-2.5 text-sm text-zinc-400 focus:outline-none cursor-not-allowed" />
+                    <input type="text" disabled placeholder={t('chat.placeholder')} className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-full pl-4 pr-12 py-2.5 text-sm text-zinc-400 focus:outline-none cursor-not-allowed" />
                     <button className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center text-zinc-500 dark:text-zinc-400 cursor-not-allowed">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                     </button>
@@ -158,18 +159,18 @@ export default function Landing() {
               className="w-full md:w-1/2"
             >
               <span className="inline-block px-3 py-1 text-xs font-bold rounded-full text-white mb-4 shadow-sm" style={{ backgroundColor: '#00579C' }}>
-                Styx AI Assistant
+                {t('landing.alt1.pill')}
               </span>
-              <h2 className="text-3xl font-bold text-zinc-900 dark:text-white mb-4">Command your API lifecycle through agentic intelligence.</h2>
+              <h2 className="text-3xl font-bold text-zinc-900 dark:text-white mb-4">{t('landing.alt1.title')}</h2>
               <p className="text-zinc-600 dark:text-zinc-400 mb-8 leading-relaxed">
-                Styx AI operates as your real-time security architect: instantly detect zombie connections, simulate decommissioning blast radii, and generate strict remediation steps through professional dialogue. Stop guessing about system dependencies. Ask the question; secure the perimeter.
+                {t('landing.alt1.desc')}
               </p>
               <Link 
                 to="/login"
                 className="inline-flex items-center justify-center px-6 py-3 text-sm font-bold text-white rounded-md hover:scale-105 transition-transform shadow-md"
                 style={{ backgroundColor: '#DA251C' }}
               >
-                Try Now
+                {t('landing.try_now')}
               </Link>
             </motion.div>
           </div>
@@ -184,18 +185,18 @@ export default function Landing() {
               className="w-full md:w-1/2"
             >
               <span className="inline-block px-3 py-1 text-xs font-bold rounded-full text-white mb-4 shadow-sm" style={{ backgroundColor: '#00579C' }}>
-                Inventory
+                {t('landing.alt2.pill')}
               </span>
-              <h2 className="text-3xl font-bold text-zinc-900 dark:text-white mb-4">Total API inventory. Zero operational blind spots.</h2>
+              <h2 className="text-3xl font-bold text-zinc-900 dark:text-white mb-4">{t('landing.alt2.title')}</h2>
               <p className="text-zinc-600 dark:text-zinc-400 mb-8 leading-relaxed">
-                The Styx Inventory is your single source of truth. Instantly classify thousands of endpoints into Active, Deprecated, Shadow, or Zombie status. Stop guessing what is running on your network and start managing your actual attack surface with real-time, deterministic scoring.
+                {t('landing.alt2.desc')}
               </p>
               <Link 
                 to="/login"
                 className="inline-flex items-center justify-center px-6 py-3 text-sm font-bold text-white rounded-md hover:scale-105 transition-transform shadow-md"
                 style={{ backgroundColor: '#DA251C' }}
               >
-                Try Now
+                {t('landing.try_now')}
               </Link>
             </motion.div>
             <motion.div 
@@ -232,18 +233,18 @@ export default function Landing() {
               className="w-full md:w-1/2"
             >
               <span className="inline-block px-3 py-1 text-xs font-bold rounded-full text-white mb-4 shadow-sm" style={{ backgroundColor: '#00579C' }}>
-                Blast Radius Simulate
+                {t('landing.alt3.pill')}
               </span>
-              <h2 className="text-3xl font-bold text-zinc-900 dark:text-white mb-4">Predict cascading failures before they happen.</h2>
+              <h2 className="text-3xl font-bold text-zinc-900 dark:text-white mb-4">{t('landing.alt3.title')}</h2>
               <p className="text-zinc-600 dark:text-zinc-400 mb-8 leading-relaxed">
-                The Styx Simulator is your architectural sandbox. Run predictive blast radius simulations using live graph topology to see exactly how decommissioning an endpoint impacts downstream applications, internal microservices, or external merchant gateways. Eliminate operational guesswork and validate system resilience in a zero-risk environment.
+                {t('landing.alt3.desc')}
               </p>
               <Link 
                 to="/login"
                 className="inline-flex items-center justify-center px-6 py-3 text-sm font-bold text-white rounded-md hover:scale-105 transition-transform shadow-md"
                 style={{ backgroundColor: '#DA251C' }}
               >
-                Try Now
+                {t('landing.try_now')}
               </Link>
             </motion.div>
           </div>
@@ -259,18 +260,18 @@ export default function Landing() {
               transition={{ duration: 0.6 }}
               className="text-center mb-16"
             >
-              <h2 className="text-3xl font-bold text-zinc-900 dark:text-white mb-4">Core Intelligence Engine</h2>
-              <p className="text-zinc-600 dark:text-zinc-400">Everything you need to secure and govern your enterprise API landscape.</p>
+              <h2 className="text-3xl font-bold text-zinc-900 dark:text-white mb-4">{t('landing.grid.title')}</h2>
+              <p className="text-zinc-600 dark:text-zinc-400">{t('landing.grid.sub')}</p>
             </motion.div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[
-                { icon: Activity, title: "Live Telemetry Ingestion", desc: "Native eBPF interception for zero-instrumentation real-time traffic analysis." },
-                { icon: ShieldAlert, title: "Deterministic ML Scoring", desc: "Modified Z-Score and MAD anomaly detection for accurate zombie identification." },
-                { icon: Map, title: "D3.js Dependency Mapping", desc: "Interactive force-directed graphs to visualize service-to-service communication paths." },
-                { icon: Fingerprint, title: "Real-Time Shadow API Alerts", desc: "Instant detection of undocumented endpoints deployed outside of standard governance." },
-                { icon: Database, title: "OWASP-Mapped Security", desc: "Automated vulnerability assessment matched against latest OWASP API security top 10." },
-                { icon: Users, title: "Multi-Tenant Architecture", desc: "Row-level data isolation built for large-scale enterprise deployments." }
+                { icon: Activity, title: t('landing.grid.f1.title'), desc: t('landing.grid.f1.desc') },
+                { icon: ShieldAlert, title: t('landing.grid.f2.title'), desc: t('landing.grid.f2.desc') },
+                { icon: Map, title: t('landing.grid.f3.title'), desc: t('landing.grid.f3.desc') },
+                { icon: Fingerprint, title: t('landing.grid.f4.title'), desc: t('landing.grid.f4.desc') },
+                { icon: Database, title: t('landing.grid.f5.title'), desc: t('landing.grid.f5.desc') },
+                { icon: Users, title: t('landing.grid.f6.title'), desc: t('landing.grid.f6.desc') }
               ].map((feat, idx) => (
                 <motion.div 
                   key={idx} 
@@ -304,17 +305,17 @@ export default function Landing() {
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-red-500/10 rounded-full blur-3xl -ml-10 -mb-10 pointer-events-none" />
             
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-6 relative z-10">
-              Start your free trial now
+              {t('landing.cta.title')}
             </h2>
             <p className="text-zinc-600 dark:text-zinc-400 mb-8 max-w-lg mx-auto relative z-10">
-              Join leading financial institutions in securing the perimeter and modernizing legacy infrastructure.
+              {t('landing.cta.sub')}
             </p>
             <Link 
               to="/login"
               className="relative z-10 inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white rounded-lg hover:scale-105 transition-transform shadow-lg shadow-red-500/20"
               style={{ backgroundColor: '#DA251C' }}
             >
-              Start Free Trial
+              {t('landing.start_trial')}
             </Link>
           </motion.div>
         </section>

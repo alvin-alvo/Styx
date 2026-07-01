@@ -20,22 +20,22 @@ export default function PublicNavbar() {
 
         <nav className="hidden md:flex items-center space-x-8">
           <Link to="/" className="text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors">
-            Home
+            {t('nav.home')}
           </Link>
           <button 
-            onClick={() => alert("Product features coming soon...")}
+            onClick={() => alert(t('nav.product_soon'))}
             className="text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors"
           >
-            Product
+            {t('nav.product')}
           </button>
           <button 
-            onClick={() => alert("Pricing details coming soon...")}
+            onClick={() => alert(t('nav.pricing_soon'))}
             className="text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors"
           >
-            Pricing
+            {t('nav.pricing')}
           </button>
           <Link to="/contact" className="text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors">
-            Contact Us
+            {t('nav.contact')}
           </Link>
         </nav>
         
