@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { getAPIs, getAPIDependencies } from '../services/api'
 import DependencyGraph from '../components/DependencyGraph'
 import { PageSkeleton } from '../components/Skeleton'
+import InfoTooltip from '../components/InfoTooltip'
 
 export default function Graph() {
   const { t } = useTranslation();
@@ -63,7 +64,10 @@ export default function Graph() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">{t("graph.title")}</h1>
+        <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-2 flex items-center">
+          {t("graph.title")}
+          <InfoTooltip text="Interactive node graph displaying service-to-service communication paths and endpoint dependencies." />
+        </h1>
         <p className="text-zinc-600 dark:text-zinc-400">Visualize API service dependencies</p>
       </div>
 

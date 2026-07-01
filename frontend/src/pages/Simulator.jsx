@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { getAPIs, simulateBlastRadius } from '../services/api'
 import BlastRadiusSimulator from '../components/BlastRadiusSimulator'
 import { PageSkeleton } from '../components/Skeleton'
+import InfoTooltip from '../components/InfoTooltip'
 
 export default function Simulator() {
   const { t } = useTranslation();
@@ -42,7 +43,10 @@ export default function Simulator() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">{t("sim.title")}</h1>
+        <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-2 flex items-center">
+          {t("sim.title")}
+          <InfoTooltip text="Interactive sandbox to predict and visualize the impact of decommissioning APIs on dependent systems." />
+        </h1>
         <p className="text-zinc-600 dark:text-zinc-400">Simulate the impact of decommissioning APIs</p>
       </div>
 

@@ -102,23 +102,25 @@ export default function InventoryTable({ apis }) {
   }
 
   return (
-    <div className="bg-white dark:bg-zinc-900 flex flex-col">
-      <FilterBar 
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        filterStatus={filterStatus}
-        onFilterChange={setFilterStatus}
-        statuses={statuses}
-        sortByRisk={sortBy === 'zombie_score' ? sortOrder : 'desc'}
-        onSortToggle={handleSortToggle}
-        totalCount={apis.length}
-        filteredCount={sorted.length}
-        placeholder={t("inv.search")}
-      />
+    <div className="bg-white dark:bg-zinc-900 flex flex-col h-full">
+      <div className="shrink-0">
+        <FilterBar 
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          filterStatus={filterStatus}
+          onFilterChange={setFilterStatus}
+          statuses={statuses}
+          sortByRisk={sortBy === 'zombie_score' ? sortOrder : 'desc'}
+          onSortToggle={handleSortToggle}
+          totalCount={apis.length}
+          filteredCount={sorted.length}
+          placeholder={t("inv.search")}
+        />
+      </div>
 
-      <div className="overflow-x-auto">
+      <div className="flex-1 overflow-auto relative">
         <table className="w-full text-sm text-left">
-          <thead className="text-xs uppercase bg-zinc-50 dark:bg-zinc-900/50 text-zinc-600 dark:text-zinc-400 border-b border-zinc-200 dark:border-zinc-800">
+          <thead className="sticky top-0 z-10 text-xs uppercase bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border-b border-zinc-200 dark:border-zinc-800 shadow-sm">
             <tr>
               <th
                 className="px-6 py-4 font-semibold tracking-wider cursor-pointer hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors"

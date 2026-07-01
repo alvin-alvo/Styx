@@ -55,7 +55,7 @@ export default function TopNav({ isSidebarOpen, onToggleSidebar }) {
   };
 
   return (
-    <div className="h-16 sticky top-0 z-10 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 px-4 md:px-6 flex items-center justify-between flex-shrink-0">
+    <div className="h-16 relative sticky top-0 z-10 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 px-4 md:px-6 flex items-center justify-between flex-shrink-0">
       
       {/* Left: Breadcrumbs & Toggle */}
       <div className="flex items-center space-x-4">
@@ -85,7 +85,7 @@ export default function TopNav({ isSidebarOpen, onToggleSidebar }) {
       </div>
 
       {/* Center: Search */}
-      <div className="flex-1 max-w-md px-4 hidden md:block">
+      <div className="absolute left-1/2 -translate-x-1/2 w-full max-w-md px-4 hidden md:block">
         <div className="relative group">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search className="h-4 w-4 text-zinc-400 group-focus-within:text-blue-500 transition-colors" />
@@ -102,12 +102,12 @@ export default function TopNav({ isSidebarOpen, onToggleSidebar }) {
           />
           <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
             <kbd className="inline-flex items-center px-1.5 py-0.5 border border-zinc-200 dark:border-zinc-700 rounded text-[10px] font-medium text-zinc-600 dark:text-zinc-400 bg-white dark:bg-zinc-800">
-              ⌘K
+              Ctrl/⌘K
             </kbd>
           </div>
 
           <AnimatePresence>
-            {isSearchFocused && searchQuery && (
+            {isSearchFocused && (
               <motion.div
                 initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -160,7 +160,7 @@ export default function TopNav({ isSidebarOpen, onToggleSidebar }) {
         <button 
           onClick={toggleTheme} 
           className="p-1.5 rounded-lg text-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors"
-          title="Toggle Theme (⌘D)"
+          title="Toggle Theme (Ctrl/⌘D)"
         >
           {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
         </button>
