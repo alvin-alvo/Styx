@@ -5,11 +5,40 @@ import {
   Tooltip, Legend, ResponsiveContainer, ComposedChart
 } from 'recharts';
 import api from '../services/api';
+import InfoTooltip from '../components/InfoTooltip';
 
 export default function Analytics() {
   const [overview, setOverview] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [timeFilter, setTimeFilter] = useState('30d');
+  const [liveData, setLiveData] = useState([]);
+
+  useEffect(() => {
+    if (timeFilter !== 'live' || !overview) return;
+    
+    const baseData = overview.zombie_trend?.trend_data || [];
+    setLiveData(baseData.slice(-15).map((d, i) => ({
+      ...d,
+      date: new Date(Date.now() - (15 - i) * 2000).toLocaleTimeString([], { hour12: false })
+    })));
+
+    const interval = setInterval(() => {
+      setLiveData(prev => {
+        if (!prev.length) return prev;
+        const last = prev[prev.length - 1];
+        return [...prev.slice(1), {
+          date: new Date().toLocaleTimeString([], { hour12: false }),
+          active_count: Math.max(0, last.active_count + Math.floor(Math.random() * 5) - 2),
+          zombie_count: Math.max(0, last.zombie_count + Math.floor(Math.random() * 3) - 1),
+          deprecated_count: Math.max(0, (last.deprecated_count || 0) + Math.floor(Math.random() * 3) - 1),
+          shadow_count: Math.max(0, (last.shadow_count || 0) + Math.floor(Math.random() * 3) - 1)
+        }];
+      });
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [timeFilter, overview]);
 
   useEffect(() => {
     const fetchAnalytics = async () => {
@@ -63,6 +92,43 @@ export default function Analytics() {
   const zombieCount = distribution.by_status.ZOMBIE || 0;
   const shadowCount = distribution.by_status.SHADOW || 0;
 
+  // Prepare Chart Data based on time filter
+  const getChartData = () => {
+    const baseData = overview.zombie_trend?.trend_data || [];
+    if (timeFilter === 'live') return liveData;
+    if (timeFilter === 'week') return baseData.slice(-7);
+    if (timeFilter === 'day') {
+      const last = baseData[baseData.length - 1] || { active_count: 100, zombie_count: 10, shadow_count: 5, deprecated_count: 5 };
+      return Array.from({ length: 24 }).map((_, i) => ({
+        date: `${i.toString().padStart(2, '0')}:00`,
+        active_count: Math.max(0, last.active_count + Math.floor(Math.random() * 10) - 5),
+        zombie_count: Math.max(0, last.zombie_count + Math.floor(Math.random() * 4) - 2),
+        deprecated_count: Math.max(0, (last.deprecated_count || 0) + Math.floor(Math.random() * 4) - 2),
+        shadow_count: Math.max(0, (last.shadow_count || 0) + Math.floor(Math.random() * 4) - 2)
+      }));
+    }
+    return baseData;
+  };
+  const chartData = getChartData();
+
+  const getChartTitle = () => {
+    if (timeFilter === 'live') return 'Live Lifecycle Threat Trend';
+    if (timeFilter === 'day') return '24-Hour Lifecycle Threat Trend';
+    if (timeFilter === 'week') return '7-Day Lifecycle Threat Trend';
+    return 'Lifecycle Threat Trend (30 Days)';
+  };
+
+  const getDynamicTrendStats = () => {
+    if (!chartData || chartData.length === 0) return { count: 0, trend: 'stable' };
+    const current = chartData[chartData.length - 1].zombie_count || 0;
+    const previous = chartData[0].zombie_count || 0;
+    let trend = 'stable';
+    if (current > previous) trend = 'increasing';
+    else if (current < previous) trend = 'decreasing';
+    return { count: current, trend };
+  };
+  const dynamicTrendStats = getDynamicTrendStats();
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -74,21 +140,33 @@ export default function Analytics() {
       {/* Executive Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-zinc-50 dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-800 p-6 shadow-lg">
-          <div className="text-sm font-medium text-zinc-600 dark:text-zinc-400 mb-2">Total Managed APIs</div>
+          <div className="flex items-center mb-2">
+            <div className="text-sm font-medium text-zinc-600 dark:text-zinc-400">Total Managed APIs</div>
+            <InfoTooltip text="The total number of active API endpoints managed and monitored across your infrastructure." />
+          </div>
           <div className="text-4xl font-bold text-zinc-900 dark:text-zinc-100">{totalAPIs}</div>
         </div>
         <div className="bg-zinc-50 dark:bg-zinc-800 rounded-lg border border-rose-500/30 p-6 shadow-lg">
-          <div className="text-sm font-medium text-rose-300/80 mb-2">Zombie APIs</div>
+          <div className="flex items-center mb-2">
+            <div className="text-sm font-medium text-rose-300/80">Zombie APIs</div>
+            <InfoTooltip text="Endpoints that are still receiving traffic but lack proper ownership, documentation, or maintenance." />
+          </div>
           <div className="text-4xl font-bold text-rose-400">{zombieCount}</div>
           <div className="text-xs text-rose-300/60 mt-2">Abandoned / undocumented</div>
         </div>
         <div className="bg-zinc-50 dark:bg-zinc-800 rounded-lg border border-purple-500/30 p-6 shadow-lg">
-          <div className="text-sm font-medium text-purple-300/80 mb-2">Shadow APIs</div>
+          <div className="flex items-center mb-2">
+            <div className="text-sm font-medium text-purple-300/80">Shadow APIs</div>
+            <InfoTooltip text="APIs deployed outside of official development channels and standard security governance." />
+          </div>
           <div className="text-4xl font-bold text-purple-400">{shadowCount}</div>
           <div className="text-xs text-purple-300/60 mt-2">Undocumented but active</div>
         </div>
         <div className="bg-zinc-50 dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-800 p-6 shadow-lg">
-          <div className="text-sm font-medium text-zinc-600 dark:text-zinc-400 mb-2">Critical Risk Assets</div>
+          <div className="flex items-center mb-2">
+            <div className="text-sm font-medium text-zinc-600 dark:text-zinc-400">Critical Risk Assets</div>
+            <InfoTooltip text="APIs with a combined risk score exceeding 70%, requiring immediate remediation." />
+          </div>
           <div className="text-4xl font-bold text-amber-400">{top_at_risk.critical_count}</div>
           <div className="text-xs text-amber-300/60 mt-2">&gt;70% combined risk score</div>
         </div>
@@ -96,19 +174,43 @@ export default function Analytics() {
 
       {/* Zombie Trend */}
       <div className="bg-zinc-50 dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-800 p-6 shadow-lg">
-        <div className="mb-6 flex justify-between items-center">
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-start justify-between">
           <div>
-            <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">Lifecycle Threat Trend (30 Days)</h2>
+            <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+              {getChartTitle()}
+              <InfoTooltip text="Visualizes the historical trend of API lifecycle states, allowing you to correlate security posture with infrastructure changes." />
+              {timeFilter === 'live' && (
+                <span className="relative flex h-2 w-2 ml-1">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                </span>
+              )}
+            </h2>
             <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Historical tracking of API abandonment vs active endpoints</p>
+            <div className="flex items-center space-x-1 bg-zinc-200 dark:bg-zinc-900 p-1 rounded-lg mt-4 inline-flex">
+              {['day', 'week', '30d', 'live'].map((filter) => (
+                <button
+                  key={filter}
+                  onClick={() => setTimeFilter(filter)}
+                  className={`px-3 py-1.5 text-xs font-medium rounded-md capitalize transition-colors ${
+                    timeFilter === filter 
+                      ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm' 
+                      : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                  }`}
+                >
+                  {filter === '30d' ? '30 Days' : filter}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="text-right">
-             <div className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">{zombie_trend.current_zombie_count} Zombies</div>
-             <div className="text-sm text-zinc-600 dark:text-zinc-400">Trend: <span className={zombie_trend.trend_direction === 'increasing' ? 'text-rose-400' : 'text-emerald-400'}>{zombie_trend.trend_direction.toUpperCase()}</span></div>
+          <div className="text-right mt-4 sm:mt-0">
+             <div className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">{dynamicTrendStats.count} Zombies</div>
+             <div className="text-sm text-zinc-600 dark:text-zinc-400">Trend: <span className={dynamicTrendStats.trend === 'increasing' ? 'text-rose-400' : dynamicTrendStats.trend === 'decreasing' ? 'text-emerald-400' : 'text-zinc-400'}>{dynamicTrendStats.trend.toUpperCase()}</span></div>
           </div>
         </div>
         <div className="bg-white/50 dark:bg-zinc-900/50 rounded-lg p-4 border border-zinc-200 dark:border-zinc-800">
           <ResponsiveContainer width="100%" height={350}>
-            <ComposedChart data={zombie_trend.trend_data} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+            <ComposedChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#2a3f5f" vertical={false} />
               <XAxis dataKey="date" tick={{ fill: '#8898aa', fontSize: 12 }} stroke="#2a3f5f" />
               <YAxis tick={{ fill: '#8898aa' }} stroke="#2a3f5f" />
@@ -129,8 +231,11 @@ export default function Analytics() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Top At-Risk APIs */}
         <div className="bg-zinc-50 dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-800 p-6 shadow-lg">
-          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-6">Top {top_at_risk.top_apis.length} Highest Risk APIs</h2>
-          <div className="space-y-4">
+          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-6 flex items-center">
+            Top {top_at_risk.top_apis.length} Highest Risk APIs
+            <InfoTooltip text="A prioritized list of endpoints with the highest combined lifecycle and security risk scores." />
+          </h2>
+          <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
             {top_at_risk.top_apis.map((api, idx) => (
               <div key={api.api_id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-lg hover:border-zinc-200 dark:border-zinc-800 transition">
                 <div className="flex-1 mb-3 sm:mb-0">

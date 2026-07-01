@@ -4,6 +4,7 @@ import { getAlerts, acknowledgeAlert } from '../services/api'
 import AlertsFeed from '../components/AlertsFeed'
 import FilterBar from '../components/FilterBar'
 import { PageSkeleton } from '../components/Skeleton'
+import InfoTooltip from '../components/InfoTooltip'
 
 export default function Alerts() {
   const { t } = useTranslation();
@@ -99,24 +100,29 @@ export default function Alerts() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">{t("alerts.title")}</h1>
+    <div className="flex flex-col space-y-6 h-[calc(100vh-8rem)]">
+      <div className="shrink-0">
+        <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-2 flex items-center">
+          {t("alerts.title")}
+          <InfoTooltip text="Live feed of system security events, vulnerabilities, and operational alerts requiring team attention." />
+        </h1>
         <p className="text-zinc-600 dark:text-zinc-400">{t("alerts.subtitle")}</p>
       </div>
 
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden">
-        <FilterBar 
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          filterStatus={filterSeverity}
-          onFilterChange={setFilterSeverity}
-          statuses={severities}
-          totalCount={alerts.length}
-          filteredCount={filteredAlerts.length}
-          placeholder={t("alerts.search")}
-        />
-        <div className="p-6">
+      <div className="flex-1 min-h-0 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg flex flex-col overflow-hidden">
+        <div className="shrink-0 border-b border-zinc-200 dark:border-zinc-800">
+          <FilterBar 
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            filterStatus={filterSeverity}
+            onFilterChange={setFilterSeverity}
+            statuses={severities}
+            totalCount={alerts.length}
+            filteredCount={filteredAlerts.length}
+            placeholder={t("alerts.search")}
+          />
+        </div>
+        <div className="flex-1 overflow-y-auto p-6">
           <AlertsFeed alerts={filteredAlerts} onAcknowledge={handleAcknowledge} />
         </div>
       </div>

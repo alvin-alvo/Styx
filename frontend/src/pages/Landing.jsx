@@ -26,10 +26,7 @@ export default function Landing() {
       {/* Header */}
       <header className="px-6 py-4 flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 relative z-20 bg-white/50 dark:bg-zinc-950/50 backdrop-blur-sm">
         <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 rounded bg-blue-600 flex items-center justify-center">
-            <Shield className="w-5 h-5 text-white" />
-          </div>
-          <span className="text-xl font-bold tracking-tight">STYX</span>
+          <img src="/logo-full.png" alt="Styx Logo" className="h-8 w-auto" />
         </div>
         
         <div className="flex items-center space-x-4">

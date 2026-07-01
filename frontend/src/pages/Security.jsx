@@ -4,6 +4,7 @@ import { getAPIs, getAPIScore } from '../services/api'
 import SecurityMatrix from '../components/SecurityMatrix'
 import FilterBar from '../components/FilterBar'
 import { PageSkeleton } from '../components/Skeleton'
+import InfoTooltip from '../components/InfoTooltip'
 
 export default function Security() {
   const { t } = useTranslation();
@@ -73,24 +74,29 @@ export default function Security() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">Security Analysis</h1>
+    <div className="flex flex-col space-y-6 h-[calc(100vh-8rem)]">
+      <div className="shrink-0">
+        <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-2 flex items-center">
+          Security Analysis
+          <InfoTooltip text="In-depth vulnerability assessment and automated risk scoring matrix for all registered APIs." />
+        </h1>
         <p className="text-zinc-600 dark:text-zinc-400">{t("sec.subtitle")}</p>
       </div>
 
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden">
-        <FilterBar 
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          filterStatus={filterStatus}
-          onFilterChange={setFilterStatus}
-          statuses={statuses}
-          totalCount={apis.length}
-          filteredCount={filteredApis.length}
-          placeholder={t("sec.search")}
-        />
-        <div className="p-6">
+      <div className="flex-1 min-h-0 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg flex flex-col overflow-hidden">
+        <div className="shrink-0 border-b border-zinc-200 dark:border-zinc-800">
+          <FilterBar 
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            filterStatus={filterStatus}
+            onFilterChange={setFilterStatus}
+            statuses={statuses}
+            totalCount={apis.length}
+            filteredCount={filteredApis.length}
+            placeholder={t("sec.search")}
+          />
+        </div>
+        <div className="flex-1 overflow-y-auto p-6">
           <SecurityMatrix apis={filteredApis} scores={scores} />
         </div>
       </div>
