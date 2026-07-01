@@ -13,6 +13,8 @@ Styx is a hackathon prototype that enables organizations to identify zombie APIs
 - **Mathematical Risk Scoring:** Calculates real-time risk scores using deterministic Modified Z-Score and MAD anomaly detection.
 - **Lifecycle Transitions:** Simulates the decommissioning process to prevent cascading failures in production.
 - **Styx AI Assistant:** A globally integrated, context-aware chatbot powered by local LLMs (Ollama + `llama3`). It has real-time access to database telemetry to act as your Senior Security Architect.
+- **Enterprise Frosted Glass UI:** A responsive, visually stunning Zinc+Blue aesthetic utilizing Glassmorphism and Lucide icons.
+- **Comprehensive Internationalization (i18n):** Real-time, zero-reload translation across the entire platform in 6 languages (English, Hindi, Tamil, Telugu, Malayalam, Marathi).
 
 ## Live Demo
 
@@ -234,12 +236,14 @@ Note: Results rely on simulated mock traffic. A true production deployment would
 - Analytics dashboard (30-day trends, heatmaps, top-at-risk APIs)
 - Population statistics calculation & monitoring (synthetic)
 
-**Phase 2.2 (True eBPF & AI Intelligence)** ✅ Complete (July 1, 2026)
+**Phase 2.2 (True eBPF, AI Intelligence, & Enterprise UI)** ✅ Complete (July 1, 2026)
 
 - Added Styx AI Assistant (Ollama `llama3`) globally available to explain risk scores and answer inventory questions based on real-time DB context.
 - Implemented eBPF Replay Engine to flawlessly simulate Linux kernel network capture ingestion natively on macOS.
 - Built interactive eBPF TopNav Controls to modify telemetry speeds dynamically.
 - Hardened Authentication pipeline.
+- Overhauled UI with an Enterprise "Frosted Glass" aesthetic (Zinc+Cobalt Blue), Lucide-react iconography, and responsive flex-box navigation.
+- Implemented Global Internationalization (i18n) supporting zero-reload translation across English, Hindi, Tamil, Telugu, Malayalam, and Marathi.
 
 **Phase 2.3 (API Lifecycle Management)** ⏳ Planned
 

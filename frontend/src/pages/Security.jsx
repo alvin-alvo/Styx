@@ -77,8 +77,8 @@ export default function Security() {
     <div className="flex flex-col space-y-6 h-[calc(100vh-8rem)]">
       <div className="shrink-0">
         <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-2 flex items-center">
-          Security Analysis
-          <InfoTooltip text="In-depth vulnerability assessment and automated risk scoring matrix for all registered APIs." />
+          {t("sec.title")}
+          <InfoTooltip text={t("sec.info")} />
         </h1>
         <p className="text-zinc-600 dark:text-zinc-400">{t("sec.subtitle")}</p>
       </div>

@@ -86,8 +86,8 @@ export default function TopNav({ isSidebarOpen, onToggleSidebar }) {
       </div>
 
       {/* Center: Search */}
-      <div className="absolute left-1/2 -translate-x-1/2 w-full max-w-md px-4 hidden md:block">
-        <div className="relative group">
+      <div className="flex-1 hidden md:flex justify-center w-full max-w-md mx-4">
+        <div className="relative group w-full">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search className="h-4 w-4 text-zinc-400 group-focus-within:text-blue-500 transition-colors" />
           </div>

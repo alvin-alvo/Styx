@@ -1,7 +1,7 @@
 # Styx Enterprise Design System (Phase 2.0)
 
 ## 1. Design Philosophy
-- **Aesthetic:** Enterprise SaaS Modernism. Clean, trustworthy, fast, and accessible.
+- **Aesthetic:** Enterprise SaaS Modernism. Clean, trustworthy, fast, accessible, and features extensive "Frosted Glass" (Glassmorphism) elements for a premium, dynamic feel.
 - **Vibe:** Looks like a mature Series-B cybersecurity product.
 - **Constraints:** ZERO emojis. Use strictly `lucide-react` for all iconography. No heavy, blocky shadows; use subtle borders and soft diffusion shadows. Zero lag on transitions.
 
@@ -9,9 +9,8 @@
 To achieve the new UX requirements, ensure these packages are installed:
 - `framer-motion`: For smooth page transitions and micro-interactions.
 - `react-hotkeys-hook`: For global keyboard shortcuts.
-- `react-i18next` & `i18next`: For lightweight multi-language support (English, indian languages).
+- `react-i18next` & `i18next`: For comprehensive internationalization (i18n) across 6 languages (English, Hindi, Tamil, Telugu, Malayalam, Marathi).
 - `clsx` & `tailwind-merge`: For dynamic class compilation.
-`
 ## 3. Color Palette (Tailwind)
 - **Backgrounds:** - Light Mode: `bg-zinc-50` (App), `bg-white` (Cards).
   - Dark Mode: `bg-zinc-950` (App), `bg-zinc-900` (Cards).
@@ -31,8 +30,8 @@ To achieve the new UX requirements, ensure these packages are installed:
 
 ## 5. Structural Layout (App Shell)
 - **Top Navbar:** - Left: Breadcrumb navigation.
-  - Center: Global Search Bar (`cmd+k` / `ctrl+k` trigger).
-  - Right: Live Telemetry Status (Pulsing emerald dot with "Live" text), Language Switcher dropdown, Theme Toggle (Sun/Moon), User Profile / Logout.
+  - Center: Global Search Bar (`cmd+k` / `ctrl+k` trigger, flexible layout to prevent occlusion).
+  - Right: eBPF Interactive Controls, Live Telemetry Status, Language Switcher dropdown (6 languages supported), Theme Toggle (Sun/Moon), User Profile / Logout.
 - **Sidebar (Left):**
   - Brand Logo (Styx).
   - Main Navigation links with active states (bg-blue-50/10).

@@ -26,10 +26,10 @@ Styx is built as a multi-tier application designed to intercept, analyze, and vi
 
 5. **Frontend Application (React + Vite)**
    - **Role:** User interface and visualization.
-   - **Details:** A React 18 application built with Vite and styled using Tailwind CSS. Key visualizations include:
+   - **Details:** A React 18 application built with Vite and styled using Tailwind CSS. It features a Frosted Glass (Glassmorphism) aesthetic and comprehensive Internationalization (i18n) across 6 languages (English, Hindi, Tamil, Telugu, Malayalam, Marathi). Key visualizations include:
      - **D3.js:** For rendering interactive, force-directed dependency graphs.
-     - **Global Chatbot UI:** Floating Styx AI widget on all screens.
-     - **eBPF Interactive Controls:** Global topbar controls to play/pause/accelerate the telemetry ingestion stream.
+     - **Global Chatbot UI:** Translucent Styx AI widget on all screens with Lucide-react iconography.
+     - **eBPF Interactive Controls:** Global topbar controls integrated dynamically with the search bar to play/pause/accelerate the telemetry ingestion stream.
      - **Recharts:** For displaying 30-day API usage trends, security risk matrices, and analytics dashboards.
 
 ## Metadata-Only Data Contract

@@ -147,10 +147,10 @@ export default function Dashboard() {
   const openAlerts = alerts.filter(a => !a.acknowledged).length;
 
   const kpis = [
-    { label: 'Total APIs', value: totalAPIs, icon: Activity, color: 'text-blue-500', info: 'Total number of active APIs currently managed in the infrastructure' },
-    { label: 'Active Zombies', value: activeZombies, icon: ShieldAlert, color: 'text-rose-500', isAlert: true, info: 'APIs that receive traffic but are not formally documented or maintained' },
-    { label: 'Avg Risk Score', value: `${avgRiskScore}%`, icon: BarChart3, color: 'text-amber-500', info: 'Average combined security and lifecycle risk score across all APIs' },
-    { label: 'Open Alerts', value: openAlerts, icon: AlertCircle, color: 'text-purple-500', info: 'Unresolved security and operational alerts requiring attention' }
+    { label: t("dash.kpi1"), value: totalAPIs, icon: Activity, color: 'text-blue-500', info: t("dash.info.total") },
+    { label: t("dash.kpi2"), value: activeZombies, icon: ShieldAlert, color: 'text-rose-500', isAlert: true, info: t("dash.info.zombies") },
+    { label: t("dash.kpi3"), value: `${avgRiskScore}%`, icon: BarChart3, color: 'text-amber-500', info: t("dash.info.risk") },
+    { label: t("dash.kpi4"), value: openAlerts, icon: AlertCircle, color: 'text-purple-500', info: t("dash.info.alerts") }
   ];
 
   // Prepare Donut Chart Data dynamically
@@ -162,10 +162,10 @@ export default function Dashboard() {
   ].filter(d => d.value > 0);
 
   const getChartTitle = () => {
-    if (timeFilter === 'live') return 'Live API Lifecycle Trend';
-    if (timeFilter === 'day') return '24-Hour API Lifecycle Trend';
-    if (timeFilter === 'week') return '7-Day API Lifecycle Trend';
-    return '30-Day API Lifecycle Trend';
+    if (timeFilter === 'live') return t("dash.chart.title.live");
+    if (timeFilter === 'day') return t("dash.chart.title.24h");
+    if (timeFilter === 'week') return t("dash.chart.title.7d");
+    return t("dash.chart1");
   };
 
   const containerVariants = {
@@ -238,7 +238,7 @@ export default function Dashboard() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6">
             <h2 className="text-base font-semibold text-zinc-900 dark:text-white flex items-center gap-2">
               {getChartTitle()}
-              <InfoTooltip text="Historical view of API traffic categorized by lifecycle status over time." />
+              <InfoTooltip text={t("dash.info.trend")} />
               {timeFilter === 'live' && (
                 <span className="relative flex h-2 w-2 ml-1">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
@@ -320,8 +320,8 @@ export default function Dashboard() {
         {/* Donut Chart - Status Distribution */}
         <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm rounded-xl p-6">
           <h2 className="text-base font-semibold text-zinc-900 dark:text-white mb-6 flex items-center">
-            Status Distribution
-            <InfoTooltip text="Current snapshot of your APIs categorized by their documented lifecycle status." />
+            {t("dash.chart2")}
+            <InfoTooltip text={t("dash.info.status")} />
           </h2>
           <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
